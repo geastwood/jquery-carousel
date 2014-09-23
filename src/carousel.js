@@ -74,6 +74,7 @@ var C = (function($) {
             };
         },
         replace: function(direction) {
+            // TODO
             var height = 250;
 
             return {
@@ -138,7 +139,7 @@ var C = (function($) {
     // controls products of carousel
     var queue = function(cfg) {
         var that = this, boxes = [], i = -1;
-        // dynamic get boxes, `how many` is also dynamic
+        // dynamic get boxes, `how many` is also dynamic, defined by the `cfg.count`
         while (++i < cfg.count) {
             boxes.push(this.getProduct(i + 1));
         }
@@ -165,16 +166,16 @@ var C = (function($) {
         var defaults = { // set defaults
             step: 1,
             count: 2,
-            rotate: true, // flag to activate the rotate
+            rotate: true, // flag to activate the auto rotate
             rotateDuration: 5000, // interval of the rotation
             duration: 500, // duration of the animation
             animationEffect: 'replace'
         };
         this.iden = iden;
-        this.cfg = $.extend({}, defaults, opts);
+        this.cfg = $.extend({}, defaults, opts); // merge config with options
         this.factory = factory(iden);
-        this.$container = $(this.factory('container')); // jQuery object the container
-        this.queue = queue.call(this, this.cfg);
+        this.$container = $(this.factory('container')); // jQuery object -> the container
+        this.queue = queue.call(this, this.cfg); // create a `queue` object
 
         if (this.cfg.rotate === true) {
             this.rotation = rotation.register(this, 'forward').start();
