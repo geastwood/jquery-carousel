@@ -53,7 +53,6 @@ animations = {
   },
   replace: function (direction, opts) {
     var height = 0, width = 0, orientation = opts && opts.orientation || 'vertical';
-    // TODO, possible refactor
     return {
       initial: function ($el) {
         var config = {
