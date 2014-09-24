@@ -36,7 +36,7 @@ var C = (function($) {
     // managing the timer, and hover event
     var rotation = {
         register: function(carousel, direction, duration) {
-            var interval = carousel.cfg.rotateDuration || 2000, intervalHandler;
+            var interval = carousel.cfg.rotateDuration, intervalHandler;
 
             return {
                 start: function() {
