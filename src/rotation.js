@@ -1,5 +1,5 @@
 // managing the timer, and hover event
-define(['animator'], function(animator) {
+define(['./animator'], function(animator) {
     return {
         register: function(carousel, direction, duration) {
             var interval = carousel.cfg.rotateDuration, intervalHandler;

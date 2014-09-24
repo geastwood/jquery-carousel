@@ -1,5 +1,5 @@
 // controls the logic of animation
-define(['animations'], function(animations) {
+define(['./animations'], function(animations) {
 
     return function(type, opts) {
         var that = this,

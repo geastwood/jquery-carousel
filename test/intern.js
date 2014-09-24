@@ -14,7 +14,7 @@ define({
     },
 
     // Non-functional test suite(s) to run in each browser
-    suites: ['test/animations'],
+    suites: ['test/animator', 'test/animations'],
 
     // Functional test suite(s) to run in each browser once non-functional tests are completed
     functionalSuites: [ /* 'myPackage/tests/functional' */ ],

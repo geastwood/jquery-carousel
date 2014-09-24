@@ -46,6 +46,5 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('intern');
     grunt.registerTask('build', ['requirejs:js']);
     grunt.registerTask('test', ['intern']);
-    grunt.registerTask('watch', ['watch']);
     grunt.registerTask('default', ['watch']);
 };
