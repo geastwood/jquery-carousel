@@ -35,22 +35,24 @@ var C = (function($) {
 
     // managing the timer, and hover event
     var rotation = {
-        register: function(carousel, direction) {
-            var interval = carousel.cfg.rotateDuration || 2000;
-            var intervalHandler;
+        register: function(carousel, direction, duration) {
+            var interval = carousel.cfg.rotateDuration || 2000, intervalHandler;
 
             return {
                 start: function() {
                     intervalHandler = setInterval(function() {
-                        animator.call({queue: carousel.queue}, carousel.cfg.animationEffect, {direction: direction});
+                        animator.call({queue: carousel.queue},
+                                      carousel.cfg.animationEffect,
+                                      {direction: direction, duration: duration}
+                                     );
                     }, interval);
                     return this;
                 },
-                resume: function() { // event handler `mouseout`
-                    this.pause();
+                resume: function(ev) { // event handler `mouseout`
+                    this.pause(ev);
                     this.start();
                 },
-                pause: function() { // event handler `mouseover`
+                pause: function(ev) { // event handler `mouseover`
                     clearInterval(intervalHandler);
                 }
             };
@@ -70,22 +72,38 @@ var C = (function($) {
                 out: function() {
                     return { opacity: 0 };
                 }
-
             };
         },
-        replace: function(direction) {
-            // TODO
-            var height = 250;
+        replace: function(direction, opts) {
+            var height = 0, width = 0, orientation = (opts && opts.orientation) || 'landscape';
 
             return {
-                initial: function() {
-                    return { 'float': 'left', opacity: -5, marginTop: (direction === 'forward') ? height : (0 - height) };
+                initial: function($el) {
+                    var config = {
+                        'float': 'left',
+                        opacity: -5
+                    },
+                    margin = margin || $el[(orientation === 'vertical' ? 'height' : 'width')]();
+
+                    config[(orientation === 'vertical' ? 'marginTop' : 'marginLeft')] =
+                            (direction === 'backward') ? margin : (0 - margin);
+                    return config;
                 },
-                'in': function() {
-                    return { marginTop: 0, opacity: 1 };
+                'in': function($el) {
+                    var config = { marginTop: 0, opacity: 1 };
+                    config[(orientation === 'vertical' ? 'marginTop' : 'marginLeft')] = 0;
+                    return config;
                 },
-                out: function() {
-                    return { opacity: 0, marginTop: (direction === 'forward') ? (0 - height) : (2 * height) };
+                out: function($el) {
+                    var config = {
+                        'float': 'left',
+                        opacity: 0
+                    },
+                    margin = margin || $el[(orientation === 'vertical' ? 'height' : 'width')]();
+
+                    config[(orientation === 'vertical' ? 'marginTop' : 'marginLeft')] =
+                            (direction === 'backward') ? (0 - margin) : (2 * margin);
+                    return config;
                 }
             };
         }
@@ -96,11 +114,13 @@ var C = (function($) {
         var that = this, duration = opts.duration || 400, anim = animations[type](opts.direction);
 
         this.queue.exit(opts.direction).forEach(function(item, index, arr) {
-            item.find('a').css({float: 'left'}).stop().animate(anim.out(), duration, function() {
+            var el = item.find('a');
+            el.css({float: 'left'}).stop().animate(anim.out(el), duration, function() {
                  // make sure only to call `enter` once, only call enter when all `out` are finished
                 if (arr.length === index + 1) {
                     that.queue.enter(opts.direction).forEach(function(item) {
-                        item.find('a').css(anim.initial()).stop().animate(anim['in'](), duration);
+                        var el = item.find('a');
+                        el.css(anim.initial(el)).stop().animate(anim['in'](el), duration);
                     });
                 }
             });
@@ -178,7 +198,7 @@ var C = (function($) {
         this.queue = queue.call(this, this.cfg); // create a `queue` object
 
         if (this.cfg.rotate === true) {
-            this.rotation = rotation.register(this, 'forward').start();
+            this.rotation = rotation.register(this, 'forward', this.cfg.duration).start();
         }
 
         this.attach(); // attach event
@@ -222,7 +242,18 @@ var C = (function($) {
 
         // attach on hover
         if (this.rotation) {
-            this.$container.hover(this.rotation.pause.bind(this.rotation), this.rotation.resume.bind(this.rotation));
+            this.$container.hover(
+                (function(that) {
+                    return function(ev) {
+                        return that.rotation.pause(ev);
+                    };
+                })(this),
+                (function() {
+                    return function(ev) {
+                        return that.rotation.resume(ev);
+                    };
+                })(this)
+            );
         }
     };
 
