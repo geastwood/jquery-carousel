@@ -40,8 +40,9 @@ var C = (function($) {
 
             return {
                 start: function() {
+                    console.log('rotation starts');
                     intervalHandler = setInterval(function() {
-                        animator.call({queue: carousel.queue},
+                        animator.call({queue: carousel.queue, cfg: carousel.cfg},
                                       carousel.cfg.animationEffect,
                                       {direction: direction, duration: duration}
                                      );
@@ -75,8 +76,9 @@ var C = (function($) {
             };
         },
         replace: function(direction, opts) {
-            var height = 0, width = 0, orientation = (opts && opts.orientation) || 'landscape';
+            var height = 0, width = 0, orientation = (opts && opts.orientation) || 'vertical';
 
+            // TODO, possible refactor
             return {
                 initial: function($el) {
                     var config = {
@@ -111,15 +113,18 @@ var C = (function($) {
 
     // controls the logic of animation
     var animator = function(type, opts) {
-        var that = this, duration = opts.duration || 400, anim = animations[type](opts.direction);
+        var that = this,
+            duration = opts.duration || 400,
+            anim = animations[type](opts.direction),
+            elLocator = this.cfg.elLocator;
 
         this.queue.exit(opts.direction).forEach(function(item, index, arr) {
-            var el = item.find('a');
+            var el = item[elLocator]('a');
             el.css({float: 'left'}).stop().animate(anim.out(el), duration, function() {
                  // make sure only to call `enter` once, only call enter when all `out` are finished
                 if (arr.length === index + 1) {
                     that.queue.enter(opts.direction).forEach(function(item) {
-                        var el = item.find('a');
+                        var el = item[elLocator]('a');
                         el.css(anim.initial(el)).stop().animate(anim['in'](el), duration);
                     });
                 }
@@ -141,9 +146,12 @@ var C = (function($) {
             that.$container.find(that.factory('productProp', index, '_headline')).html(feed.label);
             that.$container.find(that.factory('productProp', index, '_description')).html(feed.description);
             that.$container.find(that.factory('productProp', index, '_bubbles')).html(feed.more_infos);
-            that.$container.find(that.factory('productProp', index, '_price_right')).html(feed.price);
-            that.$container.find(that.factory('productProp', index, '_price_right_sub')).html(feed.price_info);
-            that.$container.find(that.factory('productProp', index, '_price_left')).html(feed.main_info);
+            that.$container.find(that.factory('productProp', index, '_price_right')).html(feed.price); // 160x60
+            that.$container.find(that.factory('productProp', index, '_price')).html(feed.price); // 728x90
+            that.$container.find(that.factory('productProp', index, '_price_right_sub')).html(feed.price_info); // 160x60
+            that.$container.find(that.factory('productProp', index, '_image_overlay_price_info')).html(feed.price_info); // 728x90
+            that.$container.find(that.factory('productProp', index, '_price_left')).html(feed.main_info); // 160x60
+            that.$container.find(that.factory('productProp', index, '_oldprice')).html(feed.main_info); // 728x90
             that.$container.find(that.factory('productProp', index, '_deeplink')).attr('href', feed.deeplink);
             that.$container.find(that.factory('productProp', index, '_more_btn')).html(feed.button_text);
 
@@ -186,6 +194,7 @@ var C = (function($) {
         var defaults = { // set defaults
             step: 1,
             count: 2,
+            elLocator: 'find',
             rotate: true, // flag to activate the auto rotate
             rotateDuration: 5000, // interval of the rotation
             duration: 500, // duration of the animation
@@ -195,13 +204,15 @@ var C = (function($) {
         this.cfg = $.extend({}, defaults, opts); // merge config with options
         this.factory = factory(iden);
         this.$container = $(this.factory('container')); // jQuery object -> the container
-        this.queue = queue.call(this, this.cfg); // create a `queue` object
+        if (this.$container.length) {
+            this.queue = queue.call(this, this.cfg); // create a `queue` object
 
-        if (this.cfg.rotate === true) {
-            this.rotation = rotation.register(this, 'forward', this.cfg.duration).start();
+            if (this.cfg.rotate === true) {
+                this.rotation = rotation.register(this, 'forward', this.cfg.duration).start();
+            }
+
+            this.attach(); // attach event
         }
-
-        this.attach(); // attach event
     };
     Carousel.prototype.getProduct = function(boxNr) {
         return $(this.factory('product', boxNr));
@@ -229,7 +240,7 @@ var C = (function($) {
             item.on('click', function() {
                 // event handler
                 animator.call(
-                    { queue: that.queue },
+                    { queue: that.queue, cfg: that.cfg },
                     that.cfg.animationEffect,
                     {
                         direction: this.className.indexOf('right') !== -1 ? 'forward' : 'backward',
@@ -260,6 +271,9 @@ var C = (function($) {
     return {
         init: function() {
             window.foo = new Carousel('a23363276cb946490cd990200fd2401d');
+            window.bar = new Carousel('31abc6c6c2927fd4f4355ffbe692bde4', {
+                rotate: true, count: 3, step: 3, elLocator: 'parent'
+            });
         }
     };
 
@@ -273,4 +287,7 @@ var noop = function() {};
 _ia_start_rotation_a23363276cb946490cd990200fd2401d = noop;
 _ia_stop_rotation_a23363276cb946490cd990200fd2401d = noop;
 _ia_rotate_both_products_a23363276cb946490cd990200fd2401d = noop;
+_ia_start_rotation_31abc6c6c2927fd4f4355ffbe692bde4 = noop;
+_ia_stop_rotation_31abc6c6c2927fd4f4355ffbe692bde4 = noop;
+_ia_rotate_both_products_31abc6c6c2927fd4f4355ffbe692bde4 = noop;
 // jshint ignore: end
