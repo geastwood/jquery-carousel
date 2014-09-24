@@ -1,5 +1,6 @@
 * [x] handle direction
 * [x] timer/rotation
-* [x]different template update product differently
+* [x] different template update product differently
+* [ ] handle browser compatibility
 
-remove inline javascript, hover functions
+Remove inline javascript, hover functions

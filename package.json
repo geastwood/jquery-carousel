@@ -3,9 +3,7 @@
   "version": "0.0.0",
   "description": "## makes it work",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "scripts": { },
   "repository": {
     "type": "git",
     "url": "git@git-1.rz1.intelliad.com:fliu/carousel-jquery.git"
@@ -20,6 +18,7 @@
     "amdclean": "^2.2.6",
     "grunt": "^0.4.5",
     "grunt-contrib-requirejs": "^0.4.4",
-    "grunt-contrib-watch": "^0.6.1"
+    "grunt-contrib-watch": "^0.6.1",
+    "intern": "^2.1.0"
   }
 }

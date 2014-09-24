@@ -4,8 +4,17 @@ module.exports = function(grunt) {
     grunt.initConfig({
         watch: {
             scripts: {
-                files: ['src/*.js'],
-                tasks: ['build']
+                files: ['src/*.js', 'test/*.js'],
+                tasks: ['intern', 'build']
+            }
+        },
+        intern: {
+            client: {
+                options: {
+                    // for other available options, see:
+                    // https://github.com/theintern/intern/wiki/Using-Intern-with-Grunt#task-options
+                    config: 'test/intern'
+                }
             }
         },
         requirejs: {
@@ -25,8 +34,7 @@ module.exports = function(grunt) {
                             wrap: {
                                 'start': ';var IABannerCarousel = (function($) {\n',
                                 'end': '\nreturn carousel;\n}(jQuery));'
-                            },
-                            //globalModules: ['IABannerCarousel']
+                            }
                         }));
                     }
                 }
@@ -35,6 +43,7 @@ module.exports = function(grunt) {
     });
     grunt.loadNpmTasks('grunt-contrib-requirejs');
     grunt.loadNpmTasks('grunt-contrib-watch');
+    grunt.loadNpmTasks('intern');
     grunt.registerTask('build', ['requirejs:js']);
     grunt.registerTask('default', ['watch']);
 };
