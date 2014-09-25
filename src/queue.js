@@ -11,7 +11,7 @@ define(['./render'], function(render) {
             enter: function(direction) {
                 // TODO, here looks hacky
                 var products = that.getProducts();
-                if (direction === 'forward') {
+                if (direction === 'backward') {
                     that.setProducts(products.slice(cfg.step).concat(products.slice(0, cfg.step)));
                 } else {
                     that.setProducts(products.slice((0 - cfg.step)).concat(products.slice(0, products.length - cfg.step)));

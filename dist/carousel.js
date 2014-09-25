@@ -59,7 +59,8 @@ animations = {
             'float': 'left',
             opacity: -5
           }, margin = margin || $el[orientation === 'vertical' ? 'height' : 'width']();
-        config[orientation === 'vertical' ? 'marginTop' : 'marginLeft'] = direction === 'backward' ? margin : 0 - margin;
+        // add margin `10` pixels to avoid flashing
+        config[orientation === 'vertical' ? 'marginTop' : 'marginLeft'] = direction === 'backward' ? margin / 2 : 0 - margin / 2 + 10;
         return config;
       },
       'in': function ($el) {
@@ -72,7 +73,7 @@ animations = {
             'float': 'left',
             opacity: 0
           }, margin = margin || $el[orientation === 'vertical' ? 'height' : 'width']();
-        config[orientation === 'vertical' ? 'marginTop' : 'marginLeft'] = direction === 'backward' ? 0 - margin : 2 * margin;
+        config[orientation === 'vertical' ? 'marginTop' : 'marginLeft'] = direction === 'backward' ? 0 - margin : margin;
         return config;
       }
     };
@@ -167,7 +168,7 @@ queue = function (cfg) {
     enter: function (direction) {
       // TODO, here looks hacky
       var products = that.getProducts();
-      if (direction === 'forward') {
+      if (direction === 'backward') {
         that.setProducts(products.slice(cfg.step).concat(products.slice(0, cfg.step)));
       } else {
         that.setProducts(products.slice(0 - cfg.step).concat(products.slice(0, products.length - cfg.step)));
@@ -186,10 +187,10 @@ _Carousel_ = function (factory, rotation, animator, queue) {
       // set defaults
       step: 1,
       count: 2,
-      elLocator: 'find',
+      elLocator: 'parent',
       rotate: true,
       // flag to activate the auto rotate
-      rotateDuration: 5000,
+      rotateDuration: 4000,
       // interval of the rotation
       duration: 500,
       // duration of the animation
@@ -265,18 +266,16 @@ _Carousel_ = function (factory, rotation, animator, queue) {
 carouselManager = function (Carousel) {
   return {
     init: function () {
-      window.foo = new Carousel('a23363276cb946490cd990200fd2401d');
+      window.$160x600 = new Carousel('a23363276cb946490cd990200fd2401d', { elLocator: 'find' });
       window.$728x90 = new Carousel('31abc6c6c2927fd4f4355ffbe692bde4', {
         rotate: true,
         count: 3,
-        step: 3,
-        elLocator: 'parent'
+        step: 1
       });
       window.$120x600 = new Carousel('8b99ee2e74b813ad2ce20956e485c105', {
         rotate: true,
         count: 2,
         step: 1,
-        elLocator: 'parent',
         animationOrientation: 'landscape'
       });
       window.$300x250 = new Carousel('4d33ac7b11f6ac49c32703ccfd7e039c', {
@@ -293,7 +292,6 @@ carouselManager = function (Carousel) {
         rotate: true,
         count: 2,
         step: 1,
-        elLocator: 'parent',
         animationOrientation: 'landscape'
       });
       window.$336x280 = new Carousel('4b5c1f38286af531a8914e3ea34392df', {
@@ -301,25 +299,19 @@ carouselManager = function (Carousel) {
         rotate: true,
         count: 2,
         step: 1,
-        elLocator: 'parents',
-        animationOrientation: 'vertical'
+        elLocator: 'parents'
       });
       window.$970x90 = new Carousel('7a9fcf304bf530b772d769618243d261', {
         rotate: true,
         count: 4,
         step: 1,
-        elLocator: 'parent',
-        animationOrientation: 'landscape',
-        animationEffect: 'fade'
+        animationOrientation: 'vertical'
       });
       window.$468x60 = new Carousel('b47d76b4266371aea2dceca286f40866', {
         rotate: true,
         count: 2,
-        step: 1,
-        elLocator: 'parent',
-        animationOrientation: 'landscape'
+        step: 1
       });
-      console.log('init');
     }
   };
 }(_Carousel_);

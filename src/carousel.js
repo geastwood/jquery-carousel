@@ -5,9 +5,9 @@ define(['./idenFactory', './rotation', './animator', './queue'], function(factor
         var defaults = { // set defaults
             step: 1,
             count: 2,
-            elLocator: 'find',
+            elLocator: 'parent',
             rotate: true, // flag to activate the auto rotate
-            rotateDuration: 5000, // interval of the rotation
+            rotateDuration: 4000, // interval of the rotation
             duration: 500, // duration of the animation
             animationEffect: 'replace',
             animationOrientation: 'vertical'

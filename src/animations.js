@@ -24,8 +24,9 @@ define(function() {
                         opacity: -5
                     },
                     margin = margin || $el[(orientation === 'vertical' ? 'height' : 'width')]();
+                    // add margin `10` pixels to avoid flashing
                     config[(orientation === 'vertical' ? 'marginTop' : 'marginLeft')] =
-                            (direction === 'backward') ? margin : (0 - margin);
+                            (direction === 'backward') ? margin/2 : (0 - margin/2 + 10);
                     return config;
                 },
                 'in': function($el) {
@@ -41,7 +42,7 @@ define(function() {
                     margin = margin || $el[(orientation === 'vertical' ? 'height' : 'width')]();
 
                     config[(orientation === 'vertical' ? 'marginTop' : 'marginLeft')] =
-                            (direction === 'backward') ? (0 - margin) : (2 * margin);
+                            (direction === 'backward') ? (0 - margin) : margin;
                     return config;
                 }
             };
