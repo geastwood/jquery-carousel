@@ -26,7 +26,7 @@ define(function() {
         };
         /* jshint ignore: end */
 
-        return opts.boxes.map(function(box, index) {
+        return $.map(opts.boxes, function(box, index) {
             return template(box, index + 1, products[index]);
         });
     };

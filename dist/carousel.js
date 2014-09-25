@@ -88,13 +88,13 @@ animations = {
 // controls the logic of animation
 // easing: easeOutBack, easeOutBounce, easeOutElastic, easeInExpo
 animator = function (type, opts) {
-  var that = this, duration = opts.duration || 400, anim = animations[type](opts.direction, { orientation: this.cfg.animationOrientation }), elLocator = this.cfg.elLocator;
-  this.queue.exit(opts.direction).forEach(function (item, index, arr) {
+  var duration = opts.duration || 400, anim = animations[type](opts.direction, { orientation: this.cfg.animationOrientation }), elLocator = this.cfg.elLocator, exitItems = this.queue.exit(opts.direction), enterItems = this.queue.enter(opts.direction);
+  $.each(exitItems, function (i, item) {
     var el = item[elLocator]('a');
     el.css({ float: 'left' }).stop().animate(anim.out(el), duration, function () {
       // make sure only to call `enter` once, only call enter when all `out` are finished
-      if (arr.length === index + 1) {
-        that.queue.enter(opts.direction).forEach(function (item) {
+      if (exitItems.length === i + 1) {
+        $.each(enterItems, function (j, item) {
           var el = item[elLocator]('a');
           el.css(anim.initial(el)).stop().animate(anim['in'](el), duration, anim.easing('easeOutBounce'));
         });
@@ -160,7 +160,7 @@ render = function (opts) {
     return selector;
   };
   /* jshint ignore: end */
-  return opts.boxes.map(function (box, index) {
+  return $.map(opts.boxes, function (box, index) {
     return template(box, index + 1, products[index]);
   });
 };
@@ -242,7 +242,7 @@ _Carousel_ = function (factory, rotation, animator, queue) {
   Carousel.prototype.attach = function () {
     var navigators = this.getNavigations(), that = this;
     // attach on `navigator` click
-    navigators.forEach(function (item) {
+    $.each(navigators, function (i, item) {
       item.on('click', function () {
         // event handler
         animator.call({
@@ -273,7 +273,7 @@ _Carousel_ = function (factory, rotation, animator, queue) {
 carouselManager = function (Carousel) {
   return {
     init: function (data) {
-      jQuery.each(data, function (i, datum) {
+      $.each(data, function (i, datum) {
         new Carousel(datum.iden, datum.config);
       });
     }

@@ -48,7 +48,7 @@ define(['./idenFactory', './rotation', './animator', './queue'], function(factor
     Carousel.prototype.attach = function() {
         var navigators = this.getNavigations(), that = this;
         // attach on `navigator` click
-        navigators.forEach(function(item) {
+        $.each(navigators, function(i, item) {
             item.on('click', function() {
                 // event handler
                 animator.call(
