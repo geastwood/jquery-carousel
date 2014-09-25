@@ -11,6 +11,9 @@ define(function() {
                 },
                 out: function() {
                     return { opacity: 0 };
+                },
+                easing: function() {
+                    return 'swing';
                 }
             };
         },
@@ -44,6 +47,9 @@ define(function() {
                     config[(orientation === 'vertical' ? 'marginTop' : 'marginLeft')] =
                             (direction === 'backward') ? (0 - margin) : margin;
                     return config;
+                },
+                easing: function(easing) {
+                    return easing || 'swing';
                 }
             };
         }

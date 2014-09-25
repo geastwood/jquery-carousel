@@ -48,6 +48,9 @@ animations = {
       },
       out: function () {
         return { opacity: 0 };
+      },
+      easing: function () {
+        return 'swing';
       }
     };
   },
@@ -75,11 +78,15 @@ animations = {
           }, margin = margin || $el[orientation === 'vertical' ? 'height' : 'width']();
         config[orientation === 'vertical' ? 'marginTop' : 'marginLeft'] = direction === 'backward' ? 0 - margin : margin;
         return config;
+      },
+      easing: function (easing) {
+        return easing || 'swing';
       }
     };
   }
 };
 // controls the logic of animation
+// easing: easeOutBack, easeOutBounce, easeOutElastic, easeInExpo
 animator = function (type, opts) {
   var that = this, duration = opts.duration || 400, anim = animations[type](opts.direction, { orientation: this.cfg.animationOrientation }), elLocator = this.cfg.elLocator;
   this.queue.exit(opts.direction).forEach(function (item, index, arr) {
@@ -89,7 +96,7 @@ animator = function (type, opts) {
       if (arr.length === index + 1) {
         that.queue.enter(opts.direction).forEach(function (item) {
           var el = item[elLocator]('a');
-          el.css(anim.initial(el)).stop().animate(anim['in'](el), duration);
+          el.css(anim.initial(el)).stop().animate(anim['in'](el), duration, anim.easing('easeOutBounce'));
         });
       }
     });
@@ -265,52 +272,9 @@ _Carousel_ = function (factory, rotation, animator, queue) {
 }(idenFactory, rotation, animator, queue);
 carouselManager = function (Carousel) {
   return {
-    init: function () {
-      window.$160x600 = new Carousel('a23363276cb946490cd990200fd2401d', { elLocator: 'find' });
-      window.$728x90 = new Carousel('31abc6c6c2927fd4f4355ffbe692bde4', {
-        rotate: true,
-        count: 3,
-        step: 1
-      });
-      window.$120x600 = new Carousel('8b99ee2e74b813ad2ce20956e485c105', {
-        rotate: true,
-        count: 2,
-        step: 1,
-        animationOrientation: 'landscape'
-      });
-      window.$300x250 = new Carousel('4d33ac7b11f6ac49c32703ccfd7e039c', {
-        // two hacks,
-        // 1) count should be 1.
-        // 2) `a` is not `div` direct parent, so use `parents`
-        rotate: true,
-        count: 2,
-        step: 1,
-        elLocator: 'parents',
-        animationOrientation: 'landscape'
-      });
-      window.$300x600 = new Carousel('61b874a87f4f7fd232b6eda46b2f11e5', {
-        rotate: true,
-        count: 2,
-        step: 1,
-        animationOrientation: 'landscape'
-      });
-      window.$336x280 = new Carousel('4b5c1f38286af531a8914e3ea34392df', {
-        // hacks same with 300x260
-        rotate: true,
-        count: 2,
-        step: 1,
-        elLocator: 'parents'
-      });
-      window.$970x90 = new Carousel('7a9fcf304bf530b772d769618243d261', {
-        rotate: true,
-        count: 4,
-        step: 1,
-        animationOrientation: 'vertical'
-      });
-      window.$468x60 = new Carousel('b47d76b4266371aea2dceca286f40866', {
-        rotate: true,
-        count: 2,
-        step: 1
+    init: function (data) {
+      jQuery.each(data, function (i, datum) {
+        new Carousel(datum.iden, datum.config);
       });
     }
   };

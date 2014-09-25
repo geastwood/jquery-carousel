@@ -1,4 +1,5 @@
 // controls the logic of animation
+// easing: easeOutBack, easeOutBounce, easeOutElastic, easeInExpo
 define(['./animations'], function(animations) {
 
     return function(type, opts) {
@@ -14,7 +15,7 @@ define(['./animations'], function(animations) {
                 if (arr.length === index + 1) {
                     that.queue.enter(opts.direction).forEach(function(item) {
                         var el = item[elLocator]('a');
-                        el.css(anim.initial(el)).stop().animate(anim['in'](el), duration);
+                        el.css(anim.initial(el)).stop().animate(anim['in'](el), duration, anim.easing('easeOutBounce'));
                     });
                 }
             });
