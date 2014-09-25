@@ -1,5 +1,5 @@
 ;var IABannerCarousel = (function($) {
-var idenFactory, animations, animator, rotation, render, queue, carousel;
+var idenFactory, animations, animator, rotation, render, queue, carouselManager, _Carousel_;
 idenFactory = function () {
   var slice = [].slice, join = [].join;
   var factory = function (iden) {
@@ -182,7 +182,7 @@ queue = function (cfg) {
     }
   };
 };
-carousel = function (factory, rotation, animator, queue) {
+_Carousel_ = function (factory, rotation, animator, queue) {
   // constructor
   var Carousel = function (iden, opts) {
     var defaults = {
@@ -262,6 +262,9 @@ carousel = function (factory, rotation, animator, queue) {
       }(this));
     }
   };
+  return Carousel;
+}(idenFactory, rotation, animator, queue);
+carouselManager = function (Carousel) {
   return {
     init: function () {
       window.foo = new Carousel('a23363276cb946490cd990200fd2401d');
@@ -271,8 +274,9 @@ carousel = function (factory, rotation, animator, queue) {
         step: 3,
         elLocator: 'parent'
       });
+      console.log('init');
     }
   };
-}(idenFactory, rotation, animator, queue);
-return carousel;
+}(_Carousel_);
+return carouselManager;
 }(jQuery));

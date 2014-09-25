@@ -22,7 +22,7 @@ module.exports = function(grunt) {
                 options: {
                     baseUrl: 'src',
                     optimize: 'none',
-                    name: 'carousel',
+                    name: 'carouselManager',
                     out: 'dist/carousel.js',
                     /*wrap: true,*/
                     onModuleBundleComplete: function (data) {
@@ -33,7 +33,7 @@ module.exports = function(grunt) {
                             'filePath': outputFile,
                             wrap: {
                                 'start': ';var IABannerCarousel = (function($) {\n',
-                                'end': '\nreturn carousel;\n}(jQuery));'
+                                'end': '\nreturn carouselManager;\n}(jQuery));'
                             }
                         }));
                     }
