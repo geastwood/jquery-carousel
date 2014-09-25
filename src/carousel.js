@@ -9,7 +9,8 @@ define(['./idenFactory', './rotation', './animator', './queue'], function(factor
             rotate: true, // flag to activate the auto rotate
             rotateDuration: 5000, // interval of the rotation
             duration: 500, // duration of the animation
-            animationEffect: 'replace'
+            animationEffect: 'replace',
+            animationOrientation: 'vertical'
         };
         this.iden = iden;
         this.cfg = $.extend({}, defaults, opts); // merge config with options

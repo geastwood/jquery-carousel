@@ -29,7 +29,7 @@ define(function() {
                     return config;
                 },
                 'in': function($el) {
-                    var config = { marginTop: 0, opacity: 1 };
+                    var config = {opacity: 1 };
                     config[(orientation === 'vertical' ? 'marginTop' : 'marginLeft')] = 0;
                     return config;
                 },

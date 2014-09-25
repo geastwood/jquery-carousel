@@ -4,7 +4,7 @@ define(['./animations'], function(animations) {
     return function(type, opts) {
         var that = this,
             duration = opts.duration || 400,
-            anim = animations[type](opts.direction),
+            anim = animations[type](opts.direction, {orientation: this.cfg.animationOrientation}),
             elLocator = this.cfg.elLocator;
 
         this.queue.exit(opts.direction).forEach(function(item, index, arr) {
