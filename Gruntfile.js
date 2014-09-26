@@ -5,7 +5,16 @@ module.exports = function(grunt) {
         watch: {
             scripts: {
                 files: ['src/*.js', 'test/*.js'],
-                tasks: ['build']
+                tasks: ['build', 'uglify']
+            }
+        },
+        uglify: {
+            options: {
+                sourceMap: true,
+            },
+            dist: {
+                src: 'dist/carousel.js',
+                dest: 'dist/carousel.min.js'
             }
         },
         requirejs: {
@@ -34,6 +43,7 @@ module.exports = function(grunt) {
     });
     grunt.loadNpmTasks('grunt-contrib-requirejs');
     grunt.loadNpmTasks('grunt-contrib-watch');
+    grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.registerTask('build', ['requirejs:js']);
     grunt.registerTask('default', ['watch']);
 };

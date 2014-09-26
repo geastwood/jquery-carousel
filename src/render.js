@@ -6,7 +6,6 @@ define(function() {
         /* jshint ignore: start */
         var template = function(selector, index, feed) {
 
-            // 160x600
             that.$container.find(that.factory('productProp', index, '_image')).attr('src', feed.image_url);
             that.$container.find(that.factory('productProp', index, '_image')).attr('alt', feed.label);
             that.$container.find(that.factory('productProp', index, '_image_overlay')).html(feed.promotion);

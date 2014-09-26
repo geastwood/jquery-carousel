@@ -2,6 +2,8 @@
 // easing: easeOutBack, easeOutBounce, easeOutElastic, easeInExpo
 define(['./animations'], function(animations) {
 
+    var experimentEasing = 'easeOutBounce';
+
     return function(type, opts) {
         var that = this, duration = opts.duration || 400,
             anim = animations[type](opts.direction, {orientation: this.cfg.animationOrientation}),
@@ -15,7 +17,7 @@ define(['./animations'], function(animations) {
                 if (exitItems.length === i + 1) {
                     $.each(that.queue.enter(opts.direction), function(j, item) {
                         var el = item[elLocator]('a');
-                        el.css(anim.initial(el)).stop().animate(anim['in'](el), duration, anim.easing('easeOutBounce'));
+                        el.css(anim.initial(el)).stop().animate(anim['in'](el), duration, anim.easing(experimentEasing));
                     });
                 }
             });

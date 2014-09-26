@@ -1,4 +1,5 @@
 ;var IABannerCarousel = (function($) {
+// handle how concat complicate `id` attribute
 var idenFactory, animations, animator, rotation, render, queue, carouselManager, _Carousel_;
 idenFactory = function () {
   var slice = [].slice, join = [].join;
@@ -28,6 +29,9 @@ idenFactory = function () {
       }
     };
     return function () {
+      // slice `arguments` and pass along the rest
+      // first argument is the collection name e.g. `product`, `container`
+      // some methods from `collection` needs addition parameters
       return collection[arguments[0]].apply(null, slice.call(arguments, 1));
     };
   };
@@ -87,21 +91,24 @@ animations = {
 };
 // controls the logic of animation
 // easing: easeOutBack, easeOutBounce, easeOutElastic, easeInExpo
-animator = function (type, opts) {
-  var that = this, duration = opts.duration || 400, anim = animations[type](opts.direction, { orientation: this.cfg.animationOrientation }), elLocator = this.cfg.elLocator, exitItems = this.queue.exit(opts.direction);
-  $.each(exitItems, function (i, item) {
-    var el = item[elLocator]('a');
-    el.css({ float: 'left' }).stop().animate(anim.out(el), duration, function () {
-      // make sure only to call `enter` once, only call enter when all `out` are finished
-      if (exitItems.length === i + 1) {
-        $.each(that.queue.enter(opts.direction), function (j, item) {
-          var el = item[elLocator]('a');
-          el.css(anim.initial(el)).stop().animate(anim['in'](el), duration, anim.easing('easeOutBounce'));
-        });
-      }
+animator = function (animations) {
+  var experimentEasing = 'easeOutBounce';
+  return function (type, opts) {
+    var that = this, duration = opts.duration || 400, anim = animations[type](opts.direction, { orientation: this.cfg.animationOrientation }), elLocator = this.cfg.elLocator, exitItems = this.queue.exit(opts.direction);
+    $.each(exitItems, function (i, item) {
+      var el = item[elLocator]('a');
+      el.css({ float: 'left' }).stop().animate(anim.out(el), duration, function () {
+        // make sure only to call `enter` once, only call enter when all `out` are finished
+        if (exitItems.length === i + 1) {
+          $.each(that.queue.enter(opts.direction), function (j, item) {
+            var el = item[elLocator]('a');
+            el.css(anim.initial(el)).stop().animate(anim['in'](el), duration, anim.easing(experimentEasing));
+          });
+        }
+      });
     });
-  });
-};
+  };
+}(animations);
 // managing the timer, and hover event
 rotation = {
   register: function (carousel, direction, duration) {
@@ -136,7 +143,6 @@ render = function (opts) {
   var that = this, products = this.getProducts();
   /* jshint ignore: start */
   var template = function (selector, index, feed) {
-    // 160x600
     that.$container.find(that.factory('productProp', index, '_image')).attr('src', feed.image_url);
     that.$container.find(that.factory('productProp', index, '_image')).attr('alt', feed.label);
     that.$container.find(that.factory('productProp', index, '_image_overlay')).html(feed.promotion);
