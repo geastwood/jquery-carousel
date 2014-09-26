@@ -14,19 +14,25 @@
     overflow: hidden;
 }
 
-
 /**
  *
- * TEMP
+ * EVERYTHING AFTER HERE IS FOR PREVIEW
  *
  */
-
 #interaction {
     float: left;
     margin: 20px;
     width: 400px;
     height: 400px;
 }
+div#ia_384_a23363276cb946490cd990200fd2401d *,
+div#ia_384_31abc6c6c2927fd4f4355ffbe692bde4 *,
+div#ia_384_8b99ee2e74b813ad2ce20956e485c105 *,
+div#ia_384_4d33ac7b11f6ac49c32703ccfd7e039c *,
+div#ia_384_61b874a87f4f7fd232b6eda46b2f11e5 *,
+div#ia_384_4b5c1f38286af531a8914e3ea34392df *,
+div#ia_384_7a9fcf304bf530b772d769618243d261 *,
+div#ia_384_b47d76b4266371aea2dceca286f40866 *,
 div#ia_384_8b99ee2e74b813ad2ce20956e485c105 * {
     box-sizing: content-box;
 }

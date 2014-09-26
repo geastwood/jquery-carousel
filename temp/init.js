@@ -31,7 +31,6 @@ IABannerCarousel.init(data);
 // jshint ignore: start
 var noop = function() {};
 
-
 var mock = function(iden) {
     var interpolate = function(template, data) {
         return template.replace(/{{(\S+)}}/g, function(a, b) {
