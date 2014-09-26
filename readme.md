@@ -16,7 +16,7 @@ Under `dist` folder, there are
 ## grunt commands
 
 * `grunt` -> which monitors the file changes and runs `grunt:build`
-* `grunt build` -> build to `dist` and uglify
+* `grunt build` -> build to `dist` and `uglify`
 
 ## what to open in browser
 
