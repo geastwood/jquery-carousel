@@ -48,6 +48,86 @@ var overwrite = (function() {
         window['_ia_stop_rotation_' + map[dimension]] = noop;
         window['_ia_rotate_both_products_' + map[dimension]] = noop;
         window['_ia_rotate_products_' + map[dimension]] = noop;
+        // DONT DELETE
+        $('.ia-' + map[dimension] + '-main_div').css('float', 'left');
     }
 
-})()
+})();
+
+var mock = (function() {
+    var interpolate = function(template, data) {
+        return template.replace(/{{(\S+)}}/g, function(a, b) {
+            return data[b];
+        });
+    }
+
+    var containerTemplate = '' +
+        '<form class="form-horizontal" role="form">' +
+            '<div id="easing-options" class="form-group">' +
+                '<label class="col-sm-4 control-label">Easing</label>' +
+                '<div class="col-sm-8">' +
+                    '<select class="form-control">{{easingOptions}}</select>' +
+                '</div>' +
+            '</div>' +
+            '<div id="animation-type" class="form-group">' +
+                '<label class="col-sm-4 control-label">Animation Type</label>' +
+                '<div class="col-sm-8">' +
+                    '<select class="form-control">{{animationTypeOptions}}</select>' +
+                '</div>' +
+            '</div>' +
+            '<div id="auto-rotate" class="form-group">' +
+                '<label class="col-sm-4 control-label">Auto rotate</label>' +
+                '<div class="col-sm-8">' +
+                    '<select class="form-control">{{autoRotate}}</select>' +
+                '</div>' +
+            '</div>' +
+        '</form>';
+
+    var generateOptions = function(coll, useIndex, activeValue) {
+        var template = '';
+
+        $.each(coll, function(index, item) {
+            var key = useIndex ? index : item;
+            template = template + ('<option value="' + key +'"' + (activeValue === key ? ' selected="true"' : '') +'>' +
+                                   key +
+                                   '</option>'
+                                  );
+        });
+
+        return template;
+    }
+    var easingMarkup = function() {
+        return generateOptions($.easing, true, 'swing');
+    };
+    var animationType = function() {
+        return generateOptions(['fade', 'replace'], false, 'replace');
+    };
+    var autoRotate = function() {
+        return generateOptions(['yes', 'no'], false, 'yes');
+    };
+
+    return {
+        setup: function() {
+            var container;
+
+            if ((container = $('#interaction').length)) {
+                return container;
+            }
+
+            container = $('<div>', {
+                id: 'interaction',
+            }).appendTo(document.body);
+
+            return container;
+        },
+        render: function(data) {
+            var container = this.setup();
+            container.html(interpolate(containerTemplate, {
+                easingOptions: easingMarkup(),
+                animationTypeOptions: animationType(),
+                autoRotate: autoRotate()
+            }));
+        }
+    };
+})();
+mock.render();

@@ -216,7 +216,8 @@ _Carousel_ = function (factory, rotation, animator, queue) {
     this.factory = factory(iden);
     this.$container = $(this.factory('container'));
     // jQuery object -> the container
-    if (this.$container.length) {
+    this.isActive = this.$container.length > 0;
+    if (this.isActive) {
       this.queue = queue.call(this, this.cfg);
       // create a `queue` object
       if (this.cfg.rotate === true) {
@@ -277,11 +278,16 @@ _Carousel_ = function (factory, rotation, animator, queue) {
   return Carousel;
 }(idenFactory, rotation, animator, queue);
 carouselManager = function (Carousel) {
+  var collection = [];
   return {
     init: function (data) {
       $.each(data, function (i, datum) {
-        new Carousel(datum.iden, datum.config);
+        var carousel = new Carousel(datum.iden, datum.config);
+        collection.push(carousel);
       });
+    },
+    get: function () {
+      return collection;
     }
   };
 }(_Carousel_);

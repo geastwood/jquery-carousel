@@ -16,7 +16,8 @@ define(['./idenFactory', './rotation', './animator', './queue'], function(factor
         this.cfg = $.extend({}, defaults, opts); // merge config with options
         this.factory = factory(iden);
         this.$container = $(this.factory('container')); // jQuery object -> the container
-        if (this.$container.length) {
+        this.isActive = this.$container.length > 0;
+        if (this.isActive) {
             this.queue = queue.call(this, this.cfg); // create a `queue` object
 
             if (this.cfg.rotate === true) {
