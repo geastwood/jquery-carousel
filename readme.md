@@ -5,16 +5,31 @@
 * `bower install`
 * `npm install`
 
+## output
+
+Under `dist` folder, there are
+
+* `carousel.js`
+* `carousel.min.js`         => minified version
+* `carousel.min.js.map`     => source map for helping debug
+
 ## grunt commands
 
-* `grunt watch` -> it's **default**, which runs `grunt:test`, `grunt:build` in sequence
-* `grunt test`  -> run all tests
-* `grunt build` -> build to `dist`
+* `grunt` -> which monitors the file changes and runs `grunt:build`
+* `grunt build` -> build to `dist` and uglify
 
 ## what to open in browser
 
-* open 160x600.html
-* open 728x90.html
+*8* templates in browser
+
+* 120x600.html
+* 160x600.html
+* 300x250.html
+* 300x600.html
+* 336x280.html
+* 468x60.html
+* 728x90.html
+* 970x90.html
 
 ## what to watch out
 
