@@ -7,13 +7,13 @@ var data = [
         config: { rotate: true, count: 3, step: 1 }
     }, {            // 120x600
         iden: '8b99ee2e74b813ad2ce20956e485c105',
-        config: { rotate: true, count: 2, step: 1, animationOrientation: 'landscape' }
+        config: { rotate: true, count: 2, step: 1, orientation: 'landscape' }
     }, {            // 300x250
         iden: '4d33ac7b11f6ac49c32703ccfd7e039c',
-        config: { rotate: true, count: 2, step: 1, elLocator: 'parents', animationEffect: 'fade' }
+        config: { rotate: true, count: 2, step: 1, elLocator: 'parents', effect: 'fade' }
     }, {            // 300x600
         iden: '61b874a87f4f7fd232b6eda46b2f11e5',
-        config: { rotate: true, count: 2, step: 1, animationOrientation: 'landscape' }
+        config: { rotate: true, count: 2, step: 1, orientation: 'landscape' }
     }, {            // 336x280
         iden: '4b5c1f38286af531a8914e3ea34392df',
         config: { rotate: true, count: 2, step: 1, elLocator: 'parents' }
@@ -31,30 +31,8 @@ IABannerCarousel.init(data);
 // jshint ignore: start
 var noop = function() {};
 
-var overwrite = (function() {
-    var map = {
-        '160x600'   : 'a23363276cb946490cd990200fd2401d',
-        '728x90'    : '31abc6c6c2927fd4f4355ffbe692bde4',
-        '120x600'   : '8b99ee2e74b813ad2ce20956e485c105',
-        '300x250'   : '4d33ac7b11f6ac49c32703ccfd7e039c',
-        '300x600'   : '61b874a87f4f7fd232b6eda46b2f11e5',
-        '336x280'   : '4b5c1f38286af531a8914e3ea34392df',
-        '970x70'    : '7a9fcf304bf530b772d769618243d261',
-        '468x60'    : 'b47d76b4266371aea2dceca286f40866'
-    };
 
-    for (var dimension in map) {
-        window['_ia_start_rotation_' + map[dimension]] = noop;
-        window['_ia_stop_rotation_' + map[dimension]] = noop;
-        window['_ia_rotate_both_products_' + map[dimension]] = noop;
-        window['_ia_rotate_products_' + map[dimension]] = noop;
-        // DONT DELETE
-        $('.ia-' + map[dimension] + '-main_div').css('float', 'left');
-    }
-
-})();
-
-var mock = (function() {
+var mock = function(iden) {
     var interpolate = function(template, data) {
         return template.replace(/{{(\S+)}}/g, function(a, b) {
             return data[b];
@@ -63,22 +41,40 @@ var mock = (function() {
 
     var containerTemplate = '' +
         '<form class="form-horizontal" role="form">' +
-            '<div id="easing-options" class="form-group">' +
+            '<div class="form-group">' +
                 '<label class="col-sm-4 control-label">Easing</label>' +
                 '<div class="col-sm-8">' +
-                    '<select class="form-control">{{easingOptions}}</select>' +
+                    '<select data-name="easing" class="carousel-config form-control">{{easing}}</select>' +
                 '</div>' +
             '</div>' +
-            '<div id="animation-type" class="form-group">' +
-                '<label class="col-sm-4 control-label">Animation Type</label>' +
+            '<div class="form-group">' +
+                '<label class="col-sm-4 control-label">Effect</label>' +
                 '<div class="col-sm-8">' +
-                    '<select class="form-control">{{animationTypeOptions}}</select>' +
+                    '<select data-name="effect" class="carousel-config form-control">{{effect}}</select>' +
                 '</div>' +
             '</div>' +
-            '<div id="auto-rotate" class="form-group">' +
-                '<label class="col-sm-4 control-label">Auto rotate</label>' +
+            '<div class="form-group">' +
+                '<label class="col-sm-4 control-label">Orientation</label>' +
                 '<div class="col-sm-8">' +
-                    '<select class="form-control">{{autoRotate}}</select>' +
+                    '<select data-name="orientation" class="carousel-config form-control">{{orientation}}</select>' +
+                '</div>' +
+            '</div>' +
+            '<div class="form-group">' +
+                '<label class="col-sm-4 control-label">Duration (ms)</label>' +
+                '<div class="col-sm-8">' +
+                    '<select data-name="duration" class="carousel-config form-control">{{duration}}</select>' +
+                '</div>' +
+            '</div>' +
+            '<div class="form-group">' +
+                '<label class="col-sm-4 control-label">Auto rotation</label>' +
+                '<div class="col-sm-8">' +
+                    '<p class="form-control-static">{{rotate}}</p>' +
+                '</div>' +
+            '</div>' +
+            '<div class="form-group">' +
+                '<label class="col-sm-4 control-label">Rotation Interval</label>' +
+                '<div class="col-sm-8">' +
+                    '<p class="form-control-static">{{rotateInterval}}</p>' +
                 '</div>' +
             '</div>' +
         '</form>';
@@ -96,38 +92,83 @@ var mock = (function() {
 
         return template;
     }
-    var easingMarkup = function() {
-        return generateOptions($.easing, true, 'swing');
+    var easing = function(v) {
+        return generateOptions($.easing, true, v);
     };
-    var animationType = function() {
-        return generateOptions(['fade', 'replace'], false, 'replace');
+    var effect = function(v) {
+        return generateOptions(['fade', 'replace'], false, v);
     };
-    var autoRotate = function() {
-        return generateOptions(['yes', 'no'], false, 'yes');
+    var orientation = function(v) {
+        return generateOptions(['landscape', 'vertical'], false, v);
+    };
+    var duration = function(v) {
+        return generateOptions([200, 300, 500, 800, 1000], false, v);
     };
 
     return {
         setup: function() {
-            var container;
+            var container, id = 'interaction';
 
-            if ((container = $('#interaction').length)) {
+            if ((container = $('#' + id).length)) {
                 return container;
             }
 
             container = $('<div>', {
-                id: 'interaction',
+                id: id,
             }).appendTo(document.body);
 
             return container;
         },
         render: function(data) {
-            var container = this.setup();
+            var carousel = IABannerCarousel.get(iden), container = this.setup();
             container.html(interpolate(containerTemplate, {
-                easingOptions: easingMarkup(),
-                animationTypeOptions: animationType(),
-                autoRotate: autoRotate()
+                easing: easing(carousel.cfg.easing),
+                effect: effect(carousel.cfg.effect),
+                orientation: orientation(carousel.cfg.orientation),
+                duration: duration(carousel.cfg.duration),
+                rotate: carousel.cfg.rotate === true ? 'Yes' : 'No',
+                rotateInterval: carousel.cfg.rotateInterval
             }));
+            this.attach(container, carousel);
+        },
+        attach: function(container, carousel) {
+            container.on('change', '.carousel-config', function() {
+                var el, propName = (el = $(this)).data('name'), val = el.val();
+                if (propName === 'duration') {
+                    val = parseInt(val, 10);
+                }
+                carousel.cfg[propName] = val;
+            });
         }
     };
+};
+
+var overwrite = (function() {
+    var map = {
+        '160x600'   : 'a23363276cb946490cd990200fd2401d',
+        '728x90'    : '31abc6c6c2927fd4f4355ffbe692bde4',
+        '120x600'   : '8b99ee2e74b813ad2ce20956e485c105',
+        '300x250'   : '4d33ac7b11f6ac49c32703ccfd7e039c',
+        '300x600'   : '61b874a87f4f7fd232b6eda46b2f11e5',
+        '336x280'   : '4b5c1f38286af531a8914e3ea34392df',
+        '970x70'    : '7a9fcf304bf530b772d769618243d261',
+        '468x60'    : 'b47d76b4266371aea2dceca286f40866'
+    };
+
+    var selector, dimension;
+    for (dimension in map) {
+        window['_ia_start_rotation_' + map[dimension]] = noop;
+        window['_ia_stop_rotation_' + map[dimension]] = noop;
+        window['_ia_rotate_both_products_' + map[dimension]] = noop;
+        window['_ia_rotate_products_' + map[dimension]] = noop;
+
+        // DONT DELETE, in order to layout the preview correctly
+        selector = $('.ia-' + map[dimension] + '-main_div');
+        if (selector.length) {
+            selector.css('float', 'left');
+            mock(map[dimension]).render();
+        }
+
+    }
+
 })();
-mock.render();

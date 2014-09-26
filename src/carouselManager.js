@@ -8,8 +8,14 @@ define(['./Carousel'], function(Carousel) {
                 collection.push(carousel);
             });
         },
-        get: function() {
-            return collection;
+        get: function(iden) {
+            var rst;
+            $.each(collection, function(i, item) {
+                if (item.iden === iden) {
+                    rst = item;
+                }
+            });
+            return rst;
         }
     };
 });

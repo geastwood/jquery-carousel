@@ -2,22 +2,22 @@
 // easing: easeOutBack, easeOutBounce, easeOutElastic, easeInExpo
 define(['./animations'], function(animations) {
 
-    var experimentEasing = 'easeOutBounce';
-
-    return function(type, opts) {
-        var that = this, duration = opts.duration || 400,
-            anim = animations[type](opts.direction, {orientation: this.cfg.animationOrientation}),
+    return function(type, direction) {
+        var that = this,
+            anim = animations[type](direction, this.cfg),
             elLocator = this.cfg.elLocator,
-            exitItems = this.queue.exit(opts.direction);
+            exitItems = this.queue.exit(direction);
 
         $.each(exitItems, function(i, item) {
             var el = item[elLocator]('a');
-            el.css({float: 'left'}).stop().animate(anim.out(el), duration, function() {
+            el.css({float: 'left'}).stop().animate(anim.out(el), that.cfg.duration, function() {
                  // make sure only to call `enter` once, only call enter when all `out` are finished
                 if (exitItems.length === i + 1) {
-                    $.each(that.queue.enter(opts.direction), function(j, item) {
+                    $.each(that.queue.enter(direction), function(j, item) {
                         var el = item[elLocator]('a');
-                        el.css(anim.initial(el)).stop().animate(anim['in'](el), duration, anim.easing(experimentEasing));
+                        el.css(anim.initial(el))
+                            .stop()
+                            .animate(anim['in'](el), that.cfg.duration, anim.easing(that.cfg.easing));
                     });
                 }
             });

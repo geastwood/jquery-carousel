@@ -18,7 +18,7 @@ define(function() {
             };
         },
         replace: function(direction, opts) {
-            var height = 0, width = 0, orientation = (opts && opts.orientation) || 'vertical';
+            var height = 0, width = 0/*, orientation = (opts && opts.orientation) || 'vertical'*/;
 
             return {
                 initial: function($el) {
@@ -26,15 +26,15 @@ define(function() {
                         'float': 'left',
                         opacity: -5
                     },
-                    margin = margin || $el[(orientation === 'vertical' ? 'height' : 'width')]();
+                    margin = margin || $el[(opts.orientation === 'vertical' ? 'height' : 'width')]();
                     // add margin `10` pixels to avoid flashing
-                    config[(orientation === 'vertical' ? 'marginTop' : 'marginLeft')] =
+                    config[(opts.orientation === 'vertical' ? 'marginTop' : 'marginLeft')] =
                             (direction === 'backward') ? margin/2 : (0 - margin/2 + 10);
                     return config;
                 },
                 'in': function($el) {
                     var config = {opacity: 1 };
-                    config[(orientation === 'vertical' ? 'marginTop' : 'marginLeft')] = 0;
+                    config[(opts.orientation === 'vertical' ? 'marginTop' : 'marginLeft')] = 0;
                     return config;
                 },
                 out: function($el) {
@@ -42,9 +42,9 @@ define(function() {
                         'float': 'left',
                         opacity: 0
                     },
-                    margin = margin || $el[(orientation === 'vertical' ? 'height' : 'width')]();
+                    margin = margin || $el[(opts.orientation === 'vertical' ? 'height' : 'width')]();
 
-                    config[(orientation === 'vertical' ? 'marginTop' : 'marginLeft')] =
+                    config[(opts.orientation === 'vertical' ? 'marginTop' : 'marginLeft')] =
                             (direction === 'backward') ? (0 - margin) : margin;
                     return config;
                 },

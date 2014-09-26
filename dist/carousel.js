@@ -59,28 +59,28 @@ animations = {
     };
   },
   replace: function (direction, opts) {
-    var height = 0, width = 0, orientation = opts && opts.orientation || 'vertical';
+    var height = 0, width = 0;
     return {
       initial: function ($el) {
         var config = {
             'float': 'left',
             opacity: -5
-          }, margin = margin || $el[orientation === 'vertical' ? 'height' : 'width']();
+          }, margin = margin || $el[opts.orientation === 'vertical' ? 'height' : 'width']();
         // add margin `10` pixels to avoid flashing
-        config[orientation === 'vertical' ? 'marginTop' : 'marginLeft'] = direction === 'backward' ? margin / 2 : 0 - margin / 2 + 10;
+        config[opts.orientation === 'vertical' ? 'marginTop' : 'marginLeft'] = direction === 'backward' ? margin / 2 : 0 - margin / 2 + 10;
         return config;
       },
       'in': function ($el) {
         var config = { opacity: 1 };
-        config[orientation === 'vertical' ? 'marginTop' : 'marginLeft'] = 0;
+        config[opts.orientation === 'vertical' ? 'marginTop' : 'marginLeft'] = 0;
         return config;
       },
       out: function ($el) {
         var config = {
             'float': 'left',
             opacity: 0
-          }, margin = margin || $el[orientation === 'vertical' ? 'height' : 'width']();
-        config[orientation === 'vertical' ? 'marginTop' : 'marginLeft'] = direction === 'backward' ? 0 - margin : margin;
+          }, margin = margin || $el[opts.orientation === 'vertical' ? 'height' : 'width']();
+        config[opts.orientation === 'vertical' ? 'marginTop' : 'marginLeft'] = direction === 'backward' ? 0 - margin : margin;
         return config;
       },
       easing: function (easing) {
@@ -91,39 +91,33 @@ animations = {
 };
 // controls the logic of animation
 // easing: easeOutBack, easeOutBounce, easeOutElastic, easeInExpo
-animator = function (animations) {
-  var experimentEasing = 'easeOutBounce';
-  return function (type, opts) {
-    var that = this, duration = opts.duration || 400, anim = animations[type](opts.direction, { orientation: this.cfg.animationOrientation }), elLocator = this.cfg.elLocator, exitItems = this.queue.exit(opts.direction);
-    $.each(exitItems, function (i, item) {
-      var el = item[elLocator]('a');
-      el.css({ float: 'left' }).stop().animate(anim.out(el), duration, function () {
-        // make sure only to call `enter` once, only call enter when all `out` are finished
-        if (exitItems.length === i + 1) {
-          $.each(that.queue.enter(opts.direction), function (j, item) {
-            var el = item[elLocator]('a');
-            el.css(anim.initial(el)).stop().animate(anim['in'](el), duration, anim.easing(experimentEasing));
-          });
-        }
-      });
+animator = function (type, direction) {
+  var that = this, anim = animations[type](direction, this.cfg), elLocator = this.cfg.elLocator, exitItems = this.queue.exit(direction);
+  $.each(exitItems, function (i, item) {
+    var el = item[elLocator]('a');
+    el.css({ float: 'left' }).stop().animate(anim.out(el), that.cfg.duration, function () {
+      // make sure only to call `enter` once, only call enter when all `out` are finished
+      if (exitItems.length === i + 1) {
+        $.each(that.queue.enter(direction), function (j, item) {
+          var el = item[elLocator]('a');
+          el.css(anim.initial(el)).stop().animate(anim['in'](el), that.cfg.duration, anim.easing(that.cfg.easing));
+        });
+      }
     });
-  };
-}(animations);
+  });
+};
 // managing the timer, and hover event
 rotation = {
   register: function (carousel, direction, duration) {
-    var interval = carousel.cfg.rotateDuration, intervalHandler;
+    var intervalHandler;
     return {
       start: function () {
         intervalHandler = setInterval(function () {
           animator.call({
             queue: carousel.queue,
             cfg: carousel.cfg
-          }, carousel.cfg.animationEffect, {
-            direction: direction,
-            duration: duration
-          });
-        }, interval);
+          }, carousel.cfg.effect, direction);
+        }, carousel.cfg.rotateInterval);
         return this;
       },
       resume: function (ev) {
@@ -203,12 +197,13 @@ _Carousel_ = function (factory, rotation, animator, queue) {
       elLocator: 'parent',
       rotate: true,
       // flag to activate the auto rotate
-      rotateDuration: 4000,
+      rotateInterval: 5000,
       // interval of the rotation
       duration: 500,
       // duration of the animation
-      animationEffect: 'replace',
-      animationOrientation: 'vertical'
+      effect: 'replace',
+      easing: 'easeOutBounce',
+      orientation: 'vertical'
     };
     this.iden = iden;
     this.cfg = $.extend({}, defaults, opts);
@@ -218,6 +213,7 @@ _Carousel_ = function (factory, rotation, animator, queue) {
     // jQuery object -> the container
     this.isActive = this.$container.length > 0;
     if (this.isActive) {
+      // only create `queue` and attach event if this `carousel` is active
       this.queue = queue.call(this, this.cfg);
       // create a `queue` object
       if (this.cfg.rotate === true) {
@@ -255,10 +251,7 @@ _Carousel_ = function (factory, rotation, animator, queue) {
         animator.call({
           queue: that.queue,
           cfg: that.cfg
-        }, that.cfg.animationEffect, {
-          direction: this.className.indexOf('right') !== -1 ? 'forward' : 'backward',
-          duration: that.cfg.duration
-        });
+        }, that.cfg.effect, this.className.indexOf('right') !== -1 ? 'forward' : 'backward');
         that.rotation && that.rotation.pause();
       });
     });
@@ -286,8 +279,14 @@ carouselManager = function (Carousel) {
         collection.push(carousel);
       });
     },
-    get: function () {
-      return collection;
+    get: function (iden) {
+      var rst;
+      $.each(collection, function (i, item) {
+        if (item.iden === iden) {
+          rst = item;
+        }
+      });
+      return rst;
     }
   };
 }(_Carousel_);

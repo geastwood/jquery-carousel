@@ -2,22 +2,26 @@ define(['./idenFactory', './rotation', './animator', './queue'], function(factor
 
     // constructor
     var Carousel = function(iden, opts) {
+
         var defaults = { // set defaults
             step: 1,
             count: 2,
             elLocator: 'parent',
             rotate: true, // flag to activate the auto rotate
-            rotateDuration: 4000, // interval of the rotation
+            rotateInterval: 5000, // interval of the rotation
             duration: 500, // duration of the animation
-            animationEffect: 'replace',
-            animationOrientation: 'vertical'
+            effect: 'replace',
+            easing: 'easeOutBounce',
+            orientation: 'vertical'
         };
+
         this.iden = iden;
         this.cfg = $.extend({}, defaults, opts); // merge config with options
         this.factory = factory(iden);
         this.$container = $(this.factory('container')); // jQuery object -> the container
         this.isActive = this.$container.length > 0;
-        if (this.isActive) {
+
+        if (this.isActive) { // only create `queue` and attach event if this `carousel` is active
             this.queue = queue.call(this, this.cfg); // create a `queue` object
 
             if (this.cfg.rotate === true) {
@@ -54,11 +58,8 @@ define(['./idenFactory', './rotation', './animator', './queue'], function(factor
                 // event handler
                 animator.call(
                     { queue: that.queue, cfg: that.cfg },
-                    that.cfg.animationEffect,
-                    {
-                        direction: this.className.indexOf('right') !== -1 ? 'forward' : 'backward',
-                        duration: that.cfg.duration
-                    }
+                    that.cfg.effect,
+                    this.className.indexOf('right') !== -1 ? 'forward' : 'backward'
                 );
                 that.rotation && that.rotation.pause();
             });
