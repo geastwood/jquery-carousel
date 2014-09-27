@@ -21,11 +21,15 @@ define(['src/idenFactory', 'src/rotation', 'src/animator', 'src/queue'], functio
         this.$container = $(this.factory('container')); // jQuery object -> the container
         this.isActive = this.$container.length > 0;
 
+        var that = this;
         if (this.isActive) { // only create `queue` and attach event if this `carousel` is active
             this.queue = queue.call(this, this.cfg); // create a `queue` object
 
             if (this.cfg.rotate === true) {
-                this.rotation = rotation.register(this, 'forward', this.cfg.duration).start();
+                this.rotation = rotation.register(
+                    function() {
+                        animator.call({queue: that.queue, cfg: that.cfg}, that.cfg.effect, 'forward');
+                    }, this.cfg.rotateInterval).start();
             }
 
             this.attach(); // attach event
@@ -68,16 +72,8 @@ define(['src/idenFactory', 'src/rotation', 'src/animator', 'src/queue'], functio
         // attach on hover
         if (this.rotation) {
             this.$container.hover(
-                (function(that) {
-                    return function(ev) {
-                        return that.rotation.pause(ev);
-                    };
-                })(this),
-                (function() {
-                    return function(ev) {
-                        return that.rotation.resume(ev);
-                    };
-                })(this)
+                $.bind(this.rotation, this.rotation.pause),
+                $.bind(this.rotation, this.rotation.resume)
             );
         }
     };

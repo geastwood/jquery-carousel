@@ -4,22 +4,19 @@ define(['src/animator'], function(animator) {
         debug: function() {
             console.log(animator);
         },
-        register: function(carousel, direction) {
-            var intervalHandler;
+        register: function() {
+            var intervalHandler, args = arguments;
 
             return {
                 start: function() {
-                    intervalHandler = setInterval(function() {
-                        animator.call({queue: carousel.queue, cfg: carousel.cfg},
-                                      carousel.cfg.effect, direction);
-                    }, carousel.cfg.rotateInterval);
+                    intervalHandler = setInterval.apply(null, args);
                     return this;
                 },
-                resume: function(ev) { // event handler `mouseout`
-                    this.pause(ev);
+                resume: function() {
+                    this.pause();
                     this.start();
                 },
-                pause: function(ev) { // event handler `mouseover`
+                pause: function() {
                     clearInterval(intervalHandler);
                 }
             };

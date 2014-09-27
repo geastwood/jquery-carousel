@@ -37,7 +37,7 @@ module.exports = function(grunt) {
                             'filePath': outputFile,
                             wrap: {
                                 'start': ';var IABannerCarousel = (function($) {\n',
-                                'end': '\nreturn carouselManager;\n}(jQuery));'
+                                'end': '\nreturn src_carouselManager;\n}(jQuery));'
                             }
                         }));
                     }

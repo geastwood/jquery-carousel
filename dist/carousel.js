@@ -112,27 +112,20 @@ src_animator = function (animations) {
 src_rotation = function (animator) {
   return {
     debug: function () {
-      console.log(animatok);
+      console.log(animator);
     },
-    register: function (carousel, direction, duration) {
-      var intervalHandler;
+    register: function () {
+      var intervalHandler, args = arguments;
       return {
         start: function () {
-          intervalHandler = setInterval(function () {
-            animator.call({
-              queue: carousel.queue,
-              cfg: carousel.cfg
-            }, carousel.cfg.effect, direction);
-          }, carousel.cfg.rotateInterval);
+          intervalHandler = setInterval.apply(null, args);
           return this;
         },
-        resume: function (ev) {
-          // event handler `mouseout`
-          this.pause(ev);
+        resume: function () {
+          this.pause();
           this.start();
         },
-        pause: function (ev) {
-          // event handler `mouseover`
+        pause: function () {
           clearInterval(intervalHandler);
         }
       };
@@ -221,12 +214,18 @@ src_Carousel = function (factory, rotation, animator, queue) {
     this.$container = $(this.factory('container'));
     // jQuery object -> the container
     this.isActive = this.$container.length > 0;
+    var that = this;
     if (this.isActive) {
       // only create `queue` and attach event if this `carousel` is active
       this.queue = queue.call(this, this.cfg);
       // create a `queue` object
       if (this.cfg.rotate === true) {
-        this.rotation = rotation.register(this, 'forward', this.cfg.duration).start();
+        this.rotation = rotation.register(function () {
+          animator.call({
+            queue: that.queue,
+            cfg: that.cfg
+          }, that.cfg.effect, 'forward');
+        }, this.cfg.rotateInterval).start();
       }
       this.attach();
     }
@@ -266,15 +265,7 @@ src_Carousel = function (factory, rotation, animator, queue) {
     });
     // attach on hover
     if (this.rotation) {
-      this.$container.hover(function (that) {
-        return function (ev) {
-          return that.rotation.pause(ev);
-        };
-      }(this), function () {
-        return function (ev) {
-          return that.rotation.resume(ev);
-        };
-      }(this));
+      this.$container.hover($.bind(this.rotation, this.rotation.pause), $.bind(this.rotation, this.rotation.resume));
     }
   };
   return Carousel;
@@ -299,5 +290,5 @@ src_carouselManager = function (Carousel) {
     }
   };
 }(src_Carousel);
-return carouselManager;
+return src_carouselManager;
 }(jQuery));
