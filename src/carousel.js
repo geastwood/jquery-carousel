@@ -1,4 +1,4 @@
-define(['./idenFactory', './rotation', './animator', './queue'], function(factory, rotation, animator, queue) {
+define(['src/idenFactory', 'src/rotation', 'src/animator', 'src/queue'], function(factory, rotation, animator, queue) {
 
     // constructor
     var Carousel = function(iden, opts) {

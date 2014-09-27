@@ -18,10 +18,15 @@
   <script type="text/javascript" src="lib/requirejs.js"></script>
   <script>
         requirejs.config({
-            baseUrl: '.'
+            baseUrl: '.',
+            paths: {
+                jquery: 'bower_components/jquery/jquery',
+                squire: 'bower_components/squire/src/Squire'
+            }
         });
   </script>
   <script src="test/animations.spec.js"></script>
+  <script src="test/rotation.spec.js"></script>
 
 </head>
 

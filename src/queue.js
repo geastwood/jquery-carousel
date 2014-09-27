@@ -1,5 +1,5 @@
 // controls products of carousel
-define(['./render'], function(render) {
+define(['src/render'], function(render) {
     return function(cfg) {
         var that = this, boxes = [], i = -1;
         // dynamic get boxes, `how many` is also dynamic, defined by the `cfg.count`

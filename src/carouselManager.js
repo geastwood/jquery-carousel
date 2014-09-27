@@ -1,4 +1,4 @@
-define(['./Carousel'], function(Carousel) {
+define(['src/Carousel'], function(Carousel) {
     var collection = [];
 
     return {

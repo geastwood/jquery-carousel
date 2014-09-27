@@ -1,6 +1,6 @@
 // controls the logic of animation
 // easing: easeOutBack, easeOutBounce, easeOutElastic, easeInExpo
-define(['./animations'], function(animations) {
+define(['src/animations'], function(animations) {
 
     return function(type, direction) {
         var that = this,
@@ -11,6 +11,7 @@ define(['./animations'], function(animations) {
         $.each(exitItems, function(i, item) {
             var el = item[elLocator]('a');
             el.css({float: 'left'}).stop().animate(anim.out(el), that.cfg.duration, function() {
+
                  // make sure only to call `enter` once, only call enter when all `out` are finished
                 if (exitItems.length === i + 1) {
                     $.each(that.queue.enter(direction), function(j, item) {

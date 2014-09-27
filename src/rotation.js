@@ -1,7 +1,10 @@
 // managing the timer, and hover event
-define(['./animator'], function(animator) {
+define(['src/animator'], function(animator) {
     return {
-        register: function(carousel, direction, duration) {
+        debug: function() {
+            console.log(animator);
+        },
+        register: function(carousel, direction) {
             var intervalHandler;
 
             return {

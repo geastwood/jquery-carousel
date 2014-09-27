@@ -20,9 +20,13 @@ module.exports = function(grunt) {
         requirejs: {
             js: {
                 options: {
-                    baseUrl: 'src',
+                    baseUrl: '.',
+                    paths: {
+                        jquery: 'bower_components/jquery/jquery',
+                        squire: 'bower_components/squire/src/Squire'
+                    },
                     optimize: 'none',
-                    name: 'carouselManager',
+                    name: 'src/carouselManager',
                     out: 'dist/carousel.js',
                     /*wrap: true,*/
                     onModuleBundleComplete: function (data) {

@@ -1,7 +1,7 @@
 ;var IABannerCarousel = (function($) {
 // handle how concat complicate `id` attribute
-var idenFactory, animations, animator, rotation, render, queue, carouselManager, _Carousel_;
-idenFactory = function () {
+var src_idenFactory, src_animations, src_animator, src_rotation, src_render, src_queue, src_Carousel, src_carouselManager;
+src_idenFactory = function () {
   var slice = [].slice, join = [].join;
   var factory = function (iden) {
     var store = window;
@@ -38,7 +38,7 @@ idenFactory = function () {
   return factory;
 }();
 // animation factory, defines all supported animation
-animations = {
+src_animations = {
   fade: function (direction) {
     return {
       initial: function () {
@@ -91,49 +91,56 @@ animations = {
 };
 // controls the logic of animation
 // easing: easeOutBack, easeOutBounce, easeOutElastic, easeInExpo
-animator = function (type, direction) {
-  var that = this, anim = animations[type](direction, this.cfg), elLocator = this.cfg.elLocator, exitItems = this.queue.exit(direction);
-  $.each(exitItems, function (i, item) {
-    var el = item[elLocator]('a');
-    el.css({ float: 'left' }).stop().animate(anim.out(el), that.cfg.duration, function () {
-      // make sure only to call `enter` once, only call enter when all `out` are finished
-      if (exitItems.length === i + 1) {
-        $.each(that.queue.enter(direction), function (j, item) {
-          var el = item[elLocator]('a');
-          el.css(anim.initial(el)).stop().animate(anim['in'](el), that.cfg.duration, anim.easing(that.cfg.easing));
-        });
-      }
+src_animator = function (animations) {
+  return function (type, direction) {
+    var that = this, anim = animations[type](direction, this.cfg), elLocator = this.cfg.elLocator, exitItems = this.queue.exit(direction);
+    $.each(exitItems, function (i, item) {
+      var el = item[elLocator]('a');
+      el.css({ float: 'left' }).stop().animate(anim.out(el), that.cfg.duration, function () {
+        // make sure only to call `enter` once, only call enter when all `out` are finished
+        if (exitItems.length === i + 1) {
+          $.each(that.queue.enter(direction), function (j, item) {
+            var el = item[elLocator]('a');
+            el.css(anim.initial(el)).stop().animate(anim['in'](el), that.cfg.duration, anim.easing(that.cfg.easing));
+          });
+        }
+      });
     });
-  });
-};
+  };
+}(src_animations);
 // managing the timer, and hover event
-rotation = {
-  register: function (carousel, direction, duration) {
-    var intervalHandler;
-    return {
-      start: function () {
-        intervalHandler = setInterval(function () {
-          animator.call({
-            queue: carousel.queue,
-            cfg: carousel.cfg
-          }, carousel.cfg.effect, direction);
-        }, carousel.cfg.rotateInterval);
-        return this;
-      },
-      resume: function (ev) {
-        // event handler `mouseout`
-        this.pause(ev);
-        this.start();
-      },
-      pause: function (ev) {
-        // event handler `mouseover`
-        clearInterval(intervalHandler);
-      }
-    };
-  }
-};
+src_rotation = function (animator) {
+  return {
+    debug: function () {
+      console.log(animatok);
+    },
+    register: function (carousel, direction, duration) {
+      var intervalHandler;
+      return {
+        start: function () {
+          intervalHandler = setInterval(function () {
+            animator.call({
+              queue: carousel.queue,
+              cfg: carousel.cfg
+            }, carousel.cfg.effect, direction);
+          }, carousel.cfg.rotateInterval);
+          return this;
+        },
+        resume: function (ev) {
+          // event handler `mouseout`
+          this.pause(ev);
+          this.start();
+        },
+        pause: function (ev) {
+          // event handler `mouseover`
+          clearInterval(intervalHandler);
+        }
+      };
+    }
+  };
+}(src_animator);
 // updates the products
-render = function (opts) {
+src_render = function (opts) {
   var that = this, products = this.getProducts();
   /* jshint ignore: start */
   var template = function (selector, index, feed) {
@@ -165,29 +172,31 @@ render = function (opts) {
   });
 };
 // controls products of carousel
-queue = function (cfg) {
-  var that = this, boxes = [], i = -1;
-  // dynamic get boxes, `how many` is also dynamic, defined by the `cfg.count`
-  while (++i < cfg.count) {
-    boxes.push(this.getProduct(i + 1));
-  }
-  return {
-    enter: function (direction) {
-      // TODO, here looks hacky
-      var products = that.getProducts();
-      if (direction === 'backward') {
-        that.setProducts(products.slice(cfg.step).concat(products.slice(0, cfg.step)));
-      } else {
-        that.setProducts(products.slice(0 - cfg.step).concat(products.slice(0, products.length - cfg.step)));
-      }
-      return render.call(that, { boxes: boxes });
-    },
-    exit: function (direction) {
-      return boxes;
+src_queue = function (render) {
+  return function (cfg) {
+    var that = this, boxes = [], i = -1;
+    // dynamic get boxes, `how many` is also dynamic, defined by the `cfg.count`
+    while (++i < cfg.count) {
+      boxes.push(this.getProduct(i + 1));
     }
+    return {
+      enter: function (direction) {
+        // TODO, here looks hacky
+        var products = that.getProducts();
+        if (direction === 'backward') {
+          that.setProducts(products.slice(cfg.step).concat(products.slice(0, cfg.step)));
+        } else {
+          that.setProducts(products.slice(0 - cfg.step).concat(products.slice(0, products.length - cfg.step)));
+        }
+        return render.call(that, { boxes: boxes });
+      },
+      exit: function (direction) {
+        return boxes;
+      }
+    };
   };
-};
-_Carousel_ = function (factory, rotation, animator, queue) {
+}(src_render);
+src_Carousel = function (factory, rotation, animator, queue) {
   // constructor
   var Carousel = function (iden, opts) {
     var defaults = {
@@ -269,8 +278,8 @@ _Carousel_ = function (factory, rotation, animator, queue) {
     }
   };
   return Carousel;
-}(idenFactory, rotation, animator, queue);
-carouselManager = function (Carousel) {
+}(src_idenFactory, src_rotation, src_animator, src_queue);
+src_carouselManager = function (Carousel) {
   var collection = [];
   return {
     init: function (data) {
@@ -289,6 +298,6 @@ carouselManager = function (Carousel) {
       return rst;
     }
   };
-}(_Carousel_);
+}(src_Carousel);
 return carouselManager;
 }(jQuery));
