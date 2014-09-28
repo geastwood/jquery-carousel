@@ -31,13 +31,12 @@ src_idenFactory = function () {
     return function () {
       // slice `arguments` and pass along the rest
       // first argument is the collection name e.g. `product`, `container`
-      // some methods from `collection` needs addition parameters
+      // some methods from `collection` need addition parameters
       return collection[arguments[0]].apply(null, slice.call(arguments, 1));
     };
   };
   return factory;
 }();
-// managing the timer, and hover event
 src_rotation = {
   register: function () {
     var intervalHandler, args = arguments;
@@ -78,7 +77,6 @@ src_animations = {
     };
   },
   replace: function (direction, opts) {
-    var height = 0, width = 0;
     return {
       initial: function ($el) {
         var config = {
@@ -131,27 +129,22 @@ src_animator = function (animations) {
 src_render = function (opts) {
   var that = this, products = this.getProducts();
   /* jshint ignore: start */
-  var template = function (selector, index, feed) {
-    that.$container.find(that.factory('productProp', index, '_image')).attr('src', feed.image_url);
-    that.$container.find(that.factory('productProp', index, '_image')).attr('alt', feed.label);
-    that.$container.find(that.factory('productProp', index, '_image_overlay')).html(feed.promotion);
-    that.$container.find(that.factory('productProp', index, '_headline')).html(feed.label);
-    that.$container.find(that.factory('productProp', index, '_description')).html(feed.description);
-    that.$container.find(that.factory('productProp', index, '_bubbles')).html(feed.more_infos);
-    that.$container.find(that.factory('productProp', index, '_price_right')).html(feed.price);
-    // 160x60
-    that.$container.find(that.factory('productProp', index, '_price')).html(feed.price);
-    // 728x90
-    that.$container.find(that.factory('productProp', index, '_price_right_sub')).html(feed.price_info);
-    // 160x60
-    that.$container.find(that.factory('productProp', index, '_image_overlay_price_info')).html(feed.price_info);
-    // 728x90
-    that.$container.find(that.factory('productProp', index, '_price_left')).html(feed.main_info);
-    // 160x60
-    that.$container.find(that.factory('productProp', index, '_oldprice')).html(feed.main_info);
-    // 728x90
-    that.$container.find(that.factory('productProp', index, '_deeplink')).attr('href', feed.deeplink);
-    that.$container.find(that.factory('productProp', index, '_more_btn')).html(feed.button_text);
+  // some properties from feed are used twice due to different template
+  var template = function (selector, number, feed) {
+    that.$container.find(that.factory('productProp', number, '_image')).attr('src', feed.image_url);
+    that.$container.find(that.factory('productProp', number, '_image')).attr('alt', feed.label);
+    that.$container.find(that.factory('productProp', number, '_image_overlay')).html(feed.promotion);
+    that.$container.find(that.factory('productProp', number, '_headline')).html(feed.label);
+    that.$container.find(that.factory('productProp', number, '_description')).html(feed.description);
+    that.$container.find(that.factory('productProp', number, '_bubbles')).html(feed.more_infos);
+    that.$container.find(that.factory('productProp', number, '_price_right')).html(feed.price);
+    that.$container.find(that.factory('productProp', number, '_price')).html(feed.price);
+    that.$container.find(that.factory('productProp', number, '_price_right_sub')).html(feed.price_info);
+    that.$container.find(that.factory('productProp', number, '_image_overlay_price_info')).html(feed.price_info);
+    that.$container.find(that.factory('productProp', number, '_price_left')).html(feed.main_info);
+    that.$container.find(that.factory('productProp', number, '_oldprice')).html(feed.main_info);
+    that.$container.find(that.factory('productProp', number, '_deeplink')).attr('href', feed.deeplink);
+    that.$container.find(that.factory('productProp', number, '_more_btn')).html(feed.button_text);
     return selector;
   };
   /* jshint ignore: end */
@@ -169,13 +162,13 @@ src_queue = function (render) {
     }
     return {
       enter: function (direction) {
-        // TODO, here looks hacky
-        var products = that.getProducts();
+        var products = that.getProducts(), newProducts;
         if (direction === 'backward') {
-          that.setProducts(products.slice(cfg.step).concat(products.slice(0, cfg.step)));
+          newProducts = products.slice(cfg.step).concat(products.slice(0, cfg.step));
         } else {
-          that.setProducts(products.slice(0 - cfg.step).concat(products.slice(0, products.length - cfg.step)));
+          newProducts = products.slice(0 - cfg.step).concat(products.slice(0, products.length - cfg.step));
         }
+        that.setProducts(newProducts);
         return render.call(that, { boxes: boxes });
       },
       exit: function (direction) {
@@ -273,16 +266,21 @@ src_Carousel = function (factory, rotation, animator, queue) {
   return Carousel;
 }(src_idenFactory, src_rotation, src_animator, src_queue);
 src_carouselManager = function (Carousel) {
+  // keep all initiated carousel instance
   var collection = [];
   return {
+    // init all carousel with passed data
+    // push the instance to collection
     init: function (data) {
       $.each(data, function (i, datum) {
         var carousel = new Carousel(datum.iden, datum.config);
         collection.push(carousel);
       });
     },
+    // search in carousel collection, find any carousel instance
+    // whose `iden` matches the passed `iden`
     get: function (iden) {
-      var rst;
+      var rst = null;
       $.each(collection, function (i, item) {
         if (item.iden === iden) {
           rst = item;

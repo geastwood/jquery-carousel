@@ -4,22 +4,23 @@ define(function() {
         var that = this, products = this.getProducts();
 
         /* jshint ignore: start */
-        var template = function(selector, index, feed) {
+        // some properties from feed are used twice due to different template
+        var template = function(selector, number, feed) {
 
-            that.$container.find(that.factory('productProp', index, '_image')).attr('src', feed.image_url);
-            that.$container.find(that.factory('productProp', index, '_image')).attr('alt', feed.label);
-            that.$container.find(that.factory('productProp', index, '_image_overlay')).html(feed.promotion);
-            that.$container.find(that.factory('productProp', index, '_headline')).html(feed.label);
-            that.$container.find(that.factory('productProp', index, '_description')).html(feed.description);
-            that.$container.find(that.factory('productProp', index, '_bubbles')).html(feed.more_infos);
-            that.$container.find(that.factory('productProp', index, '_price_right')).html(feed.price); // 160x60
-            that.$container.find(that.factory('productProp', index, '_price')).html(feed.price); // 728x90
-            that.$container.find(that.factory('productProp', index, '_price_right_sub')).html(feed.price_info); // 160x60
-            that.$container.find(that.factory('productProp', index, '_image_overlay_price_info')).html(feed.price_info); // 728x90
-            that.$container.find(that.factory('productProp', index, '_price_left')).html(feed.main_info); // 160x60
-            that.$container.find(that.factory('productProp', index, '_oldprice')).html(feed.main_info); // 728x90
-            that.$container.find(that.factory('productProp', index, '_deeplink')).attr('href', feed.deeplink);
-            that.$container.find(that.factory('productProp', index, '_more_btn')).html(feed.button_text);
+            that.$container.find(that.factory('productProp', number, '_image')).attr('src', feed.image_url);
+            that.$container.find(that.factory('productProp', number, '_image')).attr('alt', feed.label);
+            that.$container.find(that.factory('productProp', number, '_image_overlay')).html(feed.promotion);
+            that.$container.find(that.factory('productProp', number, '_headline')).html(feed.label);
+            that.$container.find(that.factory('productProp', number, '_description')).html(feed.description);
+            that.$container.find(that.factory('productProp', number, '_bubbles')).html(feed.more_infos);
+            that.$container.find(that.factory('productProp', number, '_price_right')).html(feed.price);
+            that.$container.find(that.factory('productProp', number, '_price')).html(feed.price);
+            that.$container.find(that.factory('productProp', number, '_price_right_sub')).html(feed.price_info);
+            that.$container.find(that.factory('productProp', number, '_image_overlay_price_info')).html(feed.price_info);
+            that.$container.find(that.factory('productProp', number, '_price_left')).html(feed.main_info);
+            that.$container.find(that.factory('productProp', number, '_oldprice')).html(feed.main_info);
+            that.$container.find(that.factory('productProp', number, '_deeplink')).attr('href', feed.deeplink);
+            that.$container.find(that.factory('productProp', number, '_more_btn')).html(feed.button_text);
 
             return selector;
         };

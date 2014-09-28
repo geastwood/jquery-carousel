@@ -27,16 +27,13 @@ var data = [
 ];
 
 IABannerCarousel.init(data);
-// hack
-// jshint ignore: start
-var noop = function() {};
 
 var mock = function(iden) {
     var interpolate = function(template, data) {
         return template.replace(/{{(\S+)}}/g, function(a, b) {
             return data[b];
         });
-    }
+    };
 
     var containerTemplate = '' +
         '<form class="form-horizontal" role="form">' +
@@ -153,19 +150,20 @@ var overwrite = (function() {
         '336x280'   : '4b5c1f38286af531a8914e3ea34392df',
         '970x70'    : '7a9fcf304bf530b772d769618243d261',
         '468x60'    : 'b47d76b4266371aea2dceca286f40866'
-    }, selector, dimension;
+    }, selector, dimension, noop = function() {}, iden;
 
     for (dimension in map) {
-        window['_ia_start_rotation_' + map[dimension]] = noop;
-        window['_ia_stop_rotation_' + map[dimension]] = noop;
-        window['_ia_rotate_both_products_' + map[dimension]] = noop;
-        window['_ia_rotate_products_' + map[dimension]] = noop;
+        iden = map[dimension];
+        window['_ia_start_rotation_' + iden] = noop;
+        window['_ia_stop_rotation_' + iden] = noop;
+        window['_ia_rotate_both_products_' + iden] = noop;
+        window['_ia_rotate_products_' + iden] = noop;
 
         // DONT DELETE, in order to layout the preview correctly
-        selector = $('.ia-' + map[dimension] + '-main_div');
+        selector = $('.ia-' + iden + '-main_div');
         if (selector.length) {
             selector.css('float', 'left');
-            mock(map[dimension]).render();
+            mock(iden).render();
         }
 
     }

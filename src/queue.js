@@ -2,6 +2,7 @@
 define(['src/render'], function(render) {
     return function(cfg) {
         var that = this, boxes = [], i = -1;
+
         // dynamic get boxes, `how many` is also dynamic, defined by the `cfg.count`
         while (++i < cfg.count) {
             boxes.push(this.getProduct(i + 1));
@@ -9,13 +10,15 @@ define(['src/render'], function(render) {
 
         return {
             enter: function(direction) {
-                // TODO, here looks hacky
-                var products = that.getProducts();
+                var products = that.getProducts(), newProducts;
+
                 if (direction === 'backward') {
-                    that.setProducts(products.slice(cfg.step).concat(products.slice(0, cfg.step)));
+                    newProducts = products.slice(cfg.step).concat(products.slice(0, cfg.step));
                 } else {
-                    that.setProducts(products.slice((0 - cfg.step)).concat(products.slice(0, products.length - cfg.step)));
+                    newProducts = products.slice((0 - cfg.step)).concat(products.slice(0, products.length - cfg.step));
                 }
+
+                that.setProducts(newProducts);
                 return render.call(that, {boxes: boxes});
             },
             exit: function(direction) {

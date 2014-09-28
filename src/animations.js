@@ -18,7 +18,6 @@ define(function() {
             };
         },
         replace: function(direction, opts) {
-            var height = 0, width = 0;
 
             return {
                 initial: function($el) {

@@ -25,6 +25,11 @@
     width: 400px;
     height: 400px;
 }
+html body {
+    padding: 20px;
+    float: left;
+    width: 100%;
+}
 div#ia_384_a23363276cb946490cd990200fd2401d *,
 div#ia_384_31abc6c6c2927fd4f4355ffbe692bde4 *,
 div#ia_384_8b99ee2e74b813ad2ce20956e485c105 *,
