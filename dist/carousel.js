@@ -188,20 +188,20 @@ src_Carousel = function (factory, rotation, animator, queue) {
   // constructor
   var Carousel = function (iden, opts) {
     var defaults = {
-      // set defaults
-      step: 1,
-      count: 2,
-      elLocator: 'parent',
-      rotate: true,
-      // flag to activate the auto rotate
-      rotateInterval: 5000,
-      // interval of the rotation
-      duration: 500,
-      // duration of the animation
-      effect: 'replace',
-      easing: 'easeOutBounce',
-      orientation: 'vertical'
-    };
+        // set defaults
+        step: 1,
+        count: 2,
+        elLocator: 'parent',
+        rotate: true,
+        // flag to activate the auto rotate
+        rotateInterval: 5000,
+        // interval of the rotation
+        duration: 500,
+        // duration of the animation
+        effect: 'replace',
+        easing: 'easeOutBounce',
+        orientation: 'vertical'
+      }, that = this;
     this.iden = iden;
     this.cfg = $.extend({}, defaults, opts);
     // merge config with options
@@ -209,7 +209,6 @@ src_Carousel = function (factory, rotation, animator, queue) {
     this.$container = $(this.factory('container'));
     // jQuery object -> the container
     this.isActive = this.$container.length > 0;
-    var that = this;
     if (this.isActive) {
       // only create `queue` and attach event if this `carousel` is active
       this.queue = queue.call(this, this.cfg);
@@ -260,7 +259,15 @@ src_Carousel = function (factory, rotation, animator, queue) {
     });
     // attach on hover
     if (this.rotation) {
-      this.$container.hover($.bind(this.rotation, this.rotation.pause), $.bind(this.rotation, this.rotation.resume));
+      this.$container.hover(function (that) {
+        return function (ev) {
+          return that.rotation.pause(ev);
+        };
+      }(this), function () {
+        return function (ev) {
+          return that.rotation.resume(ev);
+        };
+      }(this));
     }
   };
   return Carousel;

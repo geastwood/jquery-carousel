@@ -90,7 +90,7 @@ var mock = function(iden) {
         });
 
         return template;
-    }
+    };
     var easing = function(v) {
         return generateOptions($.easing, true, v);
     };
@@ -130,6 +130,7 @@ var mock = function(iden) {
             }));
             this.attach(container, carousel);
         },
+        // attach `event` on `combo` change
         attach: function(container, carousel) {
             container.on('change', '.carousel-config', function() {
                 var el, propName = (el = $(this)).data('name'), val = el.val();
@@ -152,9 +153,8 @@ var overwrite = (function() {
         '336x280'   : '4b5c1f38286af531a8914e3ea34392df',
         '970x70'    : '7a9fcf304bf530b772d769618243d261',
         '468x60'    : 'b47d76b4266371aea2dceca286f40866'
-    };
+    }, selector, dimension;
 
-    var selector, dimension;
     for (dimension in map) {
         window['_ia_start_rotation_' + map[dimension]] = noop;
         window['_ia_stop_rotation_' + map[dimension]] = noop;

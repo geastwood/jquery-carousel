@@ -13,7 +13,7 @@ define(['src/idenFactory', 'src/rotation', 'src/animator', 'src/queue'], functio
             effect: 'replace',
             easing: 'easeOutBounce',
             orientation: 'vertical'
-        };
+        }, that = this;
 
         this.iden = iden;
         this.cfg = $.extend({}, defaults, opts); // merge config with options
@@ -21,7 +21,6 @@ define(['src/idenFactory', 'src/rotation', 'src/animator', 'src/queue'], functio
         this.$container = $(this.factory('container')); // jQuery object -> the container
         this.isActive = this.$container.length > 0;
 
-        var that = this;
         if (this.isActive) { // only create `queue` and attach event if this `carousel` is active
             this.queue = queue.call(this, this.cfg); // create a `queue` object
 
@@ -72,8 +71,16 @@ define(['src/idenFactory', 'src/rotation', 'src/animator', 'src/queue'], functio
         // attach on hover
         if (this.rotation) {
             this.$container.hover(
-                $.bind(this.rotation, this.rotation.pause),
-                $.bind(this.rotation, this.rotation.resume)
+                (function(that) {
+                    return function(ev) {
+                        return that.rotation.pause(ev);
+                    };
+                })(this),
+                (function() {
+                    return function(ev) {
+                        return that.rotation.resume(ev);
+                    };
+                })(this)
             );
         }
     };
