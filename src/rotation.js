@@ -1,9 +1,6 @@
 // managing the timer, and hover event
-define(['src/animator'], function(animator) {
+define(function() {
     return {
-        debug: function() {
-            console.log(animator);
-        },
         register: function() {
             var intervalHandler, args = arguments;
 

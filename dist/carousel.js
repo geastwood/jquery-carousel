@@ -1,6 +1,6 @@
 ;var IABannerCarousel = (function($) {
 // handle how concat complicate `id` attribute
-var src_idenFactory, src_animations, src_animator, src_rotation, src_render, src_queue, src_Carousel, src_carouselManager;
+var src_idenFactory, src_rotation, src_animations, src_animator, src_render, src_queue, src_Carousel, src_carouselManager;
 src_idenFactory = function () {
   var slice = [].slice, join = [].join;
   var factory = function (iden) {
@@ -37,6 +37,25 @@ src_idenFactory = function () {
   };
   return factory;
 }();
+// managing the timer, and hover event
+src_rotation = {
+  register: function () {
+    var intervalHandler, args = arguments;
+    return {
+      start: function () {
+        intervalHandler = setInterval.apply(null, args);
+        return this;
+      },
+      resume: function () {
+        this.pause();
+        this.start();
+      },
+      pause: function () {
+        clearInterval(intervalHandler);
+      }
+    };
+  }
+};
 // animation factory, defines all supported animation
 src_animations = {
   fade: function (direction) {
@@ -108,30 +127,6 @@ src_animator = function (animations) {
     });
   };
 }(src_animations);
-// managing the timer, and hover event
-src_rotation = function (animator) {
-  return {
-    debug: function () {
-      console.log(animator);
-    },
-    register: function () {
-      var intervalHandler, args = arguments;
-      return {
-        start: function () {
-          intervalHandler = setInterval.apply(null, args);
-          return this;
-        },
-        resume: function () {
-          this.pause();
-          this.start();
-        },
-        pause: function () {
-          clearInterval(intervalHandler);
-        }
-      };
-    }
-  };
-}(src_animator);
 // updates the products
 src_render = function (opts) {
   var that = this, products = this.getProducts();
