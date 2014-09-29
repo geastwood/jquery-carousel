@@ -46,5 +46,6 @@ The `carousel.min.js` is for **production** use. In order to get the latest vers
 * [x] 300x600     -> arrow flash
 * [x] 120x600     -> arrow flash
 * [x] add uglify
+* [ ] to add additional css
 * [ ] check hover show/hide
 * [ ] Remove inline javascript, hover functions

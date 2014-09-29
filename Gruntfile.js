@@ -6,19 +6,20 @@ module.exports = function(grunt) {
         watch: {
             scripts: {
                 files: ['src/*.js', 'test/*.js', 'temp/*.js'],
-                tasks: ['build', 'uglify']
+                tasks: ['build']
             }
         },
         uglify: {
             options: {
                 sourceMap: true,
-                banner: '/*!'                                                           + '\n' +
-                            'name:          <%= pkg.name %>'                            + '\n' +
-                            'version:       v<%= pkg.version %>'                        + '\n' +
-                            'repo:          <%= pkg.repository.url %>'                  + '\n' +
-                            'readme:        <%= pkg.repository.readme %>'               + '\n' +
-                            'compiled at:   <%= grunt.template.today("yyyy-mm-dd") %>'  + '\n' +
-                        '*/'
+                report: 'gzip',
+                banner: '/*'                                                           + '\n' +
+                        ' * name:          <%= pkg.name %>'                            + '\n' +
+                        ' * version:       v<%= pkg.version %>'                        + '\n' +
+                        ' * repo:          <%= pkg.repository.url %>'                  + '\n' +
+                        ' * readme:        <%= pkg.repository.readme %>'               + '\n' +
+                        ' * compiled at:   <%= grunt.template.today("yyyy-mm-dd") %>'  + '\n' +
+                        ' */'
             },
             dist: {
                 src: 'dist/carousel.js',
@@ -56,6 +57,6 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-requirejs');
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-contrib-uglify');
-    grunt.registerTask('build', ['requirejs:js']);
+    grunt.registerTask('build', ['requirejs:js', 'uglify']);
     grunt.registerTask('default', ['watch']);
 };
