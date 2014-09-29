@@ -2,6 +2,7 @@
 
 module.exports = function(grunt) {
     grunt.initConfig({
+        pkg: grunt.file.readJSON('package.json'),
         watch: {
             scripts: {
                 files: ['src/*.js', 'test/*.js', 'temp/*.js'],
@@ -11,6 +12,13 @@ module.exports = function(grunt) {
         uglify: {
             options: {
                 sourceMap: true,
+                banner: '/*!'                                                           + '\n' +
+                            'name:          <%= pkg.name %>'                            + '\n' +
+                            'version:       v<%= pkg.version %>'                        + '\n' +
+                            'repo:          <%= pkg.repository.url %>'                  + '\n' +
+                            'readme:        <%= pkg.repository.readme %>'               + '\n' +
+                            'compiled at:   <%= grunt.template.today("yyyy-mm-dd") %>'  + '\n' +
+                        '*/'
             },
             dist: {
                 src: 'dist/carousel.js',

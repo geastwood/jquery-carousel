@@ -17,38 +17,40 @@ define(['src/idenFactory', 'src/rotation', 'src/animator', 'src/queue'], functio
 
         this.iden = iden;
         this.cfg = $.extend({}, defaults, opts); // merge config with options
-        this.factory = factory(iden);
-        this.$container = $(this.factory('container')); // jQuery object -> the container
+        this.select = factory(iden); // create a `select` factory function for this `carousel`
+        this.$container = $(this.select('container')); // jQuery object -> the container
         this.isActive = this.$container.length > 0;
 
         if (this.isActive) { // only create `queue` and attach event if this `carousel` is active
+            // TODO, extract to a method
             this.queue = queue.call(this, this.cfg); // create a `queue` object
 
             if (this.cfg.rotate === true) {
                 this.rotation = rotation.register(
                     function() {
                         animator.call({queue: that.queue, cfg: that.cfg}, that.cfg.effect, 'forward');
-                    }, this.cfg.rotateInterval).start();
+                    }, this.cfg.rotateInterval)
+                    .start();
             }
 
             this.attach(); // attach event
         }
     };
     Carousel.prototype.getProduct = function(boxNr) {
-        return $(this.factory('product', boxNr));
+        return $(this.select('product', boxNr));
     };
     Carousel.prototype.getProducts = function() { // get `products`, as how, defined in factory
-        this.products = this.factory('products');
+        this.products = this.select('products');
         return this.products;
     };
     Carousel.prototype.setProducts = function(v) {
-        this.product = this.factory('products', v);
+        this.product = this.select('products', v);
         return this;
     };
     Carousel.prototype.getNavigations = function() { // get `navigation` buttons, and store them as `array`
         this.navigators = this.navigators || [
-            this.$container.find(this.factory('naviLeft')),
-            this.$container.find(this.factory('naviRight'))
+            this.$container.find(this.select('naviLeft')),
+            this.$container.find(this.select('naviRight'))
         ];
 
         return this.navigators;

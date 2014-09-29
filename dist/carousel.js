@@ -131,20 +131,20 @@ src_render = function (opts) {
   /* jshint ignore: start */
   // some properties from feed are used twice due to different template
   var template = function (selector, number, feed) {
-    that.$container.find(that.factory('productProp', number, '_image')).attr('src', feed.image_url);
-    that.$container.find(that.factory('productProp', number, '_image')).attr('alt', feed.label);
-    that.$container.find(that.factory('productProp', number, '_image_overlay')).html(feed.promotion);
-    that.$container.find(that.factory('productProp', number, '_headline')).html(feed.label);
-    that.$container.find(that.factory('productProp', number, '_description')).html(feed.description);
-    that.$container.find(that.factory('productProp', number, '_bubbles')).html(feed.more_infos);
-    that.$container.find(that.factory('productProp', number, '_price_right')).html(feed.price);
-    that.$container.find(that.factory('productProp', number, '_price')).html(feed.price);
-    that.$container.find(that.factory('productProp', number, '_price_right_sub')).html(feed.price_info);
-    that.$container.find(that.factory('productProp', number, '_image_overlay_price_info')).html(feed.price_info);
-    that.$container.find(that.factory('productProp', number, '_price_left')).html(feed.main_info);
-    that.$container.find(that.factory('productProp', number, '_oldprice')).html(feed.main_info);
-    that.$container.find(that.factory('productProp', number, '_deeplink')).attr('href', feed.deeplink);
-    that.$container.find(that.factory('productProp', number, '_more_btn')).html(feed.button_text);
+    that.$container.find(that.select('productProp', number, '_image')).attr('src', feed.image_url);
+    that.$container.find(that.select('productProp', number, '_image')).attr('alt', feed.label);
+    that.$container.find(that.select('productProp', number, '_image_overlay')).html(feed.promotion);
+    that.$container.find(that.select('productProp', number, '_headline')).html(feed.label);
+    that.$container.find(that.select('productProp', number, '_description')).html(feed.description);
+    that.$container.find(that.select('productProp', number, '_bubbles')).html(feed.more_infos);
+    that.$container.find(that.select('productProp', number, '_price_right')).html(feed.price);
+    that.$container.find(that.select('productProp', number, '_price')).html(feed.price);
+    that.$container.find(that.select('productProp', number, '_price_right_sub')).html(feed.price_info);
+    that.$container.find(that.select('productProp', number, '_image_overlay_price_info')).html(feed.price_info);
+    that.$container.find(that.select('productProp', number, '_price_left')).html(feed.main_info);
+    that.$container.find(that.select('productProp', number, '_oldprice')).html(feed.main_info);
+    that.$container.find(that.select('productProp', number, '_deeplink')).attr('href', feed.deeplink);
+    that.$container.find(that.select('productProp', number, '_more_btn')).html(feed.button_text);
     return selector;
   };
   /* jshint ignore: end */
@@ -198,12 +198,14 @@ src_Carousel = function (factory, rotation, animator, queue) {
     this.iden = iden;
     this.cfg = $.extend({}, defaults, opts);
     // merge config with options
-    this.factory = factory(iden);
-    this.$container = $(this.factory('container'));
+    this.select = factory(iden);
+    // create a `select` factory function for this `carousel`
+    this.$container = $(this.select('container'));
     // jQuery object -> the container
     this.isActive = this.$container.length > 0;
     if (this.isActive) {
       // only create `queue` and attach event if this `carousel` is active
+      // TODO, extract to a method
       this.queue = queue.call(this, this.cfg);
       // create a `queue` object
       if (this.cfg.rotate === true) {
@@ -218,22 +220,22 @@ src_Carousel = function (factory, rotation, animator, queue) {
     }
   };
   Carousel.prototype.getProduct = function (boxNr) {
-    return $(this.factory('product', boxNr));
+    return $(this.select('product', boxNr));
   };
   Carousel.prototype.getProducts = function () {
     // get `products`, as how, defined in factory
-    this.products = this.factory('products');
+    this.products = this.select('products');
     return this.products;
   };
   Carousel.prototype.setProducts = function (v) {
-    this.product = this.factory('products', v);
+    this.product = this.select('products', v);
     return this;
   };
   Carousel.prototype.getNavigations = function () {
     // get `navigation` buttons, and store them as `array`
     this.navigators = this.navigators || [
-      this.$container.find(this.factory('naviLeft')),
-      this.$container.find(this.factory('naviRight'))
+      this.$container.find(this.select('naviLeft')),
+      this.$container.find(this.select('naviRight'))
     ];
     return this.navigators;
   };

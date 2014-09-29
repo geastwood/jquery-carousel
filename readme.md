@@ -1,17 +1,19 @@
-# Carousel the jQuery way
+# Carousel plugin for banners (the jQuery way)
 
 ## setup
 
 * `bower install`
 * `npm install`
 
-## output
+## what to use
 
 Under `dist` folder, there are
 
 * `carousel.js`
 * `carousel.min.js`         => minified version
 * `carousel.min.js.map`     => source map for helping debug
+
+The `carousel.min.js` is for **production** use. In order to get the latest version, run `grunt build` to build manually.
 
 ## grunt commands
 
@@ -34,3 +36,15 @@ Under `dist` folder, there are
 ## what to watch out
 
 * if to use together `live reload`, be sure to only monitor the `dist` folder for changes
+
+## TODOs
+
+* [x] handle direction
+* [x] timer/rotation
+* [x] different template update product differently
+* [x] handle browser compatibility
+* [x] 300x600     -> arrow flash
+* [x] 120x600     -> arrow flash
+* [x] add uglify
+* [ ] check hover show/hide
+* [ ] Remove inline javascript, hover functions

@@ -1,12 +1,11 @@
 {
-  "name": "carousel-jquery",
-  "version": "0.0.0",
-  "description": "## makes it work",
-  "main": "index.js",
-  "scripts": {},
+  "name": "IA Carousel plugin for banners (jQuery)",
+  "version": "0.1.0",
+  "description": "Carousel plugin for banner",
   "repository": {
     "type": "git",
-    "url": "git@git-1.rz1.intelliad.com:fliu/carousel-jquery.git"
+    "url": "git@git-1.rz1.intelliad.com:fliu/carousel-jquery.git",
+    "readme": "http://git-1.rz1.intelliad.com/fliu/carousel-jquery/tree/master"
   },
   "keywords": [
     "carousel",
