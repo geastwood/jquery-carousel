@@ -110,7 +110,7 @@ var mock = function(iden) {
             }
 
             container = $('<div>', {
-                id: id,
+                'id': id
             }).appendTo(document.body);
 
             return container;

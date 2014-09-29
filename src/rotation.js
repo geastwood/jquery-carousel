@@ -10,7 +10,8 @@ define(function() {
 
             return {
                 start: function() {
-                    intervalHandler = setInterval.apply(null, args);
+                    // pls don't change this line to `setInterval.apply(null, args) for IE8 compatibility reason
+                    intervalHandler = setInterval(args[0], args[1]);
                     return this;
                 },
                 resume: function() {
