@@ -1,5 +1,6 @@
 {
-  "name": "IA Carousel plugin for banners (jQuery)",
+  "name": "ia-carousel-jquery",
+  "fullname": "IA Carousel plugin for banners (jQuery)",
   "version": "0.1.0",
   "description": "Carousel plugin for banner",
   "repository": {
@@ -19,5 +20,8 @@
     "grunt-contrib-requirejs": "^0.4.4",
     "grunt-contrib-uglify": "^0.6.0",
     "grunt-contrib-watch": "^0.6.1"
+  },
+  "dependencies": {
+    "maxmin": "^1.0.0"
   }
 }
