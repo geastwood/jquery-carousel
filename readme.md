@@ -18,7 +18,7 @@ The `carousel.min.js` is for **production** use. In order to get the latest vers
 ## how to use
 
 1. run `npm install` and `grunt build`
-2. load the plugin js `carousel.min.js`
+2. load the plugin js `carousel.min.js` under `dist`
 3. init carousel by calling `IABannerCarousel.init`, e.g.
 
 ```js
@@ -44,6 +44,7 @@ IABannerCarousel.init([{
 *8* templates in browser
 
 **in order to view in browser, be sure to run `bower install` to get `jQuery` first**
+
 **you may also need a server, run `php -S localhost:8888`** to start a server and type in `localhost:8888/120x600.html`
 
 * 120x600.html
