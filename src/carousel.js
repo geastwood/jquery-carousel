@@ -28,7 +28,7 @@ define(['src/idenFactory', 'src/rotation', 'src/animator', 'src/queue'], functio
             if (this.cfg.rotate === true) {
                 this.rotation = rotation.register(
                     function() {
-                        animator.call({queue: that.queue, cfg: that.cfg}, that.cfg.effect, 'forward');
+                        animator.call(that, that.cfg.effect, 'forward');
                     }, this.cfg.rotateInterval)
                     .start();
             }
@@ -62,7 +62,7 @@ define(['src/idenFactory', 'src/rotation', 'src/animator', 'src/queue'], functio
             item.on('click', function() {
                 // event handler
                 animator.call(
-                    { queue: that.queue, cfg: that.cfg },
+                    that,
                     that.cfg.effect,
                     this.className.indexOf('right') !== -1 ? 'forward' : 'backward'
                 );

@@ -1,6 +1,6 @@
 ;var IABannerCarousel = (function($) {
 // handle how concat complicate `id` attribute
-var src_idenFactory, src_rotation, src_animations, src_animator, src_render, src_queue, src_Carousel, src_carouselManager;
+var src_idenFactory, src_rotation, src_animations, src_render, src_animator, src_queue, src_Carousel, src_carouselManager;
 src_idenFactory = function () {
   var slice = [].slice, join = [].join;
   var factory = function (iden) {
@@ -107,27 +107,8 @@ src_animations = {
     };
   }
 };
-// controls the logic of animation
-// easing: easeOutBack, easeOutBounce, easeOutElastic, easeInExpo
-src_animator = function (animations) {
-  return function (type, direction) {
-    var that = this, anim = animations[type](direction, this.cfg), elLocator = this.cfg.elLocator, exitItems = this.queue.exit(direction);
-    $.each(exitItems, function (i, item) {
-      var el = item[elLocator]('a');
-      el.css({ float: 'left' }).stop().animate(anim.out(el), that.cfg.duration, function () {
-        // make sure only to call `enter` once, only call enter when all `out` are finished
-        if (exitItems.length === i + 1) {
-          $.each(that.queue.enter(direction), function (j, item) {
-            var el = item[elLocator]('a');
-            el.css(anim.initial(el)).stop().animate(anim['in'](el), that.cfg.duration, anim.easing(that.cfg.easing));
-          });
-        }
-      });
-    });
-  };
-}(src_animations);
 // updates the products
-src_render = function (opts) {
+src_render = function (box, index) {
   var that = this, products = this.getProducts();
   /* jshint ignore: start */
   // some properties from feed are used twice due to different template
@@ -149,35 +130,52 @@ src_render = function (opts) {
     return selector;
   };
   /* jshint ignore: end */
-  return $.map(opts.boxes, function (box, index) {
-    return template(box, index + 1, products[index]);
-  });
+  return template(box, index + 1, products[index]);
 };
-// controls products of carousel
-src_queue = function (render) {
-  return function (cfg) {
-    var that = this, boxes = [], i = -1;
-    // dynamic get boxes, `how many` is also dynamic, defined by the `cfg.count`
-    while (++i < cfg.count) {
-      boxes.push(this.getProduct(i + 1));
-    }
-    return {
-      enter: function (direction) {
-        var products = that.getProducts(), newProducts;
-        if (direction === 'backward') {
-          newProducts = products.slice(cfg.step).concat(products.slice(0, cfg.step));
-        } else {
-          newProducts = products.slice(0 - cfg.step).concat(products.slice(0, products.length - cfg.step));
+// controls the logic of animation
+// easing: easeOutBack, easeOutBounce, easeOutElastic, easeInExpo
+src_animator = function (animations, render) {
+  return function (type, direction) {
+    var that = this, anim = animations[type](direction, this.cfg), elLocator = this.cfg.elLocator, exitItems = this.queue.exit(direction);
+    $.each(exitItems, function (i, item) {
+      var el = item[elLocator]('a');
+      el.css({ float: 'left' }).stop().animate(anim.out(el), that.cfg.duration, function () {
+        // make sure only to call `enter` once, only call enter when all `out` are finished
+        if (exitItems.length === i + 1) {
+          $.each(that.queue.enter(direction), function (j, item) {
+            var el = item[elLocator]('a');
+            render.call(that, item, j);
+            // update the markup
+            el.css(anim.initial(el)).stop().animate(anim['in'](el), that.cfg.duration, anim.easing(that.cfg.easing));
+          });
         }
-        that.setProducts(newProducts);
-        return render.call(that, { boxes: boxes });
-      },
-      exit: function (direction) {
-        return boxes;
-      }
-    };
+      });
+    });
   };
-}(src_render);
+}(src_animations, src_render);
+// controls products of carousel
+src_queue = function (cfg) {
+  var that = this, boxes = [], i = -1;
+  // dynamic get boxes, `how many` is also dynamic, defined by the `cfg.count`
+  while (++i < cfg.count) {
+    boxes.push(this.getProduct(i + 1));
+  }
+  return {
+    enter: function (direction) {
+      var products = that.getProducts(), newProducts;
+      if (direction === 'backward') {
+        newProducts = products.slice(cfg.step).concat(products.slice(0, cfg.step));
+      } else {
+        newProducts = products.slice(0 - cfg.step).concat(products.slice(0, products.length - cfg.step));
+      }
+      that.setProducts(newProducts);
+      return boxes;
+    },
+    exit: function (direction) {
+      return boxes;
+    }
+  };
+};
 src_Carousel = function (factory, rotation, animator, queue) {
   // constructor
   var Carousel = function (iden, opts) {
@@ -211,10 +209,7 @@ src_Carousel = function (factory, rotation, animator, queue) {
       // create a `queue` object
       if (this.cfg.rotate === true) {
         this.rotation = rotation.register(function () {
-          animator.call({
-            queue: that.queue,
-            cfg: that.cfg
-          }, that.cfg.effect, 'forward');
+          animator.call(that, that.cfg.effect, 'forward');
         }, this.cfg.rotateInterval).start();
       }
       this.attach();
@@ -246,10 +241,7 @@ src_Carousel = function (factory, rotation, animator, queue) {
     $.each(navigators, function (i, item) {
       item.on('click', function () {
         // event handler
-        animator.call({
-          queue: that.queue,
-          cfg: that.cfg
-        }, that.cfg.effect, this.className.indexOf('right') !== -1 ? 'forward' : 'backward');
+        animator.call(that, that.cfg.effect, this.className.indexOf('right') !== -1 ? 'forward' : 'backward');
         that.rotation && that.rotation.pause();
       });
     });

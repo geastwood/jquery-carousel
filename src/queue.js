@@ -1,5 +1,5 @@
 // controls products of carousel
-define(['src/render'], function(render) {
+define(function() {
     return function(cfg) {
         var that = this, boxes = [], i = -1;
 
@@ -19,7 +19,8 @@ define(['src/render'], function(render) {
                 }
 
                 that.setProducts(newProducts);
-                return render.call(that, {boxes: boxes});
+
+                return boxes;
             },
             exit: function(direction) {
                 return boxes;

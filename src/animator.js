@@ -1,6 +1,6 @@
 // controls the logic of animation
 // easing: easeOutBack, easeOutBounce, easeOutElastic, easeInExpo
-define(['src/animations'], function(animations) {
+define(['src/animations', 'src/render'], function(animations, render) {
 
     return function(type, direction) {
         var that = this,
@@ -16,6 +16,7 @@ define(['src/animations'], function(animations) {
                 if (exitItems.length === i + 1) {
                     $.each(that.queue.enter(direction), function(j, item) {
                         var el = item[elLocator]('a');
+                        render.call(that, item, j); // update the markup
                         el.css(anim.initial(el))
                             .stop()
                             .animate(anim['in'](el), that.cfg.duration, anim.easing(that.cfg.easing));

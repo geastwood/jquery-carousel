@@ -1,6 +1,6 @@
 // updates the products
 define(function() {
-    return function(opts) {
+    return function(box, index) {
         var that = this, products = this.getProducts();
 
         /* jshint ignore: start */
@@ -26,8 +26,6 @@ define(function() {
         };
         /* jshint ignore: end */
 
-        return $.map(opts.boxes, function(box, index) {
-            return template(box, index + 1, products[index]);
-        });
+        return template(box, index + 1, products[index]);
     };
 });
