@@ -1,11 +1,11 @@
 // updates the products
 define(function() {
-    return function(box, index) {
+    return function(boxIndex, productIndex) {
         var that = this, products = this.getProducts();
 
         /* jshint ignore: start */
         // some properties from feed are used twice due to different template
-        var template = function(selector, number, feed) {
+        var template = function(number, feed) {
 
             that.$container.find(that.select('productProp', number, '_image')).attr('src', feed.image_url);
             that.$container.find(that.select('productProp', number, '_image')).attr('alt', feed.label);
@@ -22,10 +22,9 @@ define(function() {
             that.$container.find(that.select('productProp', number, '_deeplink')).attr('href', feed.deeplink);
             that.$container.find(that.select('productProp', number, '_more_btn')).html(feed.button_text);
 
-            return selector;
         };
         /* jshint ignore: end */
 
-        return template(box, index + 1, products[index]);
+        return template(boxIndex + 1, products[productIndex]);
     };
 });

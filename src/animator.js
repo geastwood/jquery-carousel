@@ -12,11 +12,13 @@ define(['src/animations', 'src/render'], function(animations, render) {
             var el = item[elLocator]('a');
             el.css({float: 'left'}).stop().animate(anim.out(el), that.cfg.duration, function() {
 
+                var enterObj;
                  // make sure only to call `enter` once, only call enter when all `out` are finished
                 if (exitItems.length === i + 1) {
-                    $.each(that.queue.enter(direction), function(j, item) {
+                    enterObj = that.queue.enter(direction);
+                    $.each(enterObj.boxes, function(j, item) {
                         var el = item[elLocator]('a');
-                        render.call(that, item, j); // update the markup
+                        render.call(that, j, enterObj.productIndexes.shift()); // update the markup
                         el.css(anim.initial(el))
                             .stop()
                             .animate(anim['in'](el), that.cfg.duration, anim.easing(that.cfg.easing));

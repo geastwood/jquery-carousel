@@ -1,6 +1,6 @@
 ;var IABannerCarousel = (function($) {
 // handle how concat complicate `id` attribute
-var src_idenFactory, src_rotation, src_animations, src_render, src_animator, src_queue, src_Carousel, src_carouselManager;
+var src_idenFactory, src_rotation, src_animations, src_render, src_animator, src_iterator, src_queue, src_Carousel, src_carouselManager;
 src_idenFactory = function () {
   var slice = [].slice, join = [].join;
   var factory = function (iden) {
@@ -108,11 +108,11 @@ src_animations = {
   }
 };
 // updates the products
-src_render = function (box, index) {
+src_render = function (boxIndex, productIndex) {
   var that = this, products = this.getProducts();
   /* jshint ignore: start */
   // some properties from feed are used twice due to different template
-  var template = function (selector, number, feed) {
+  var template = function (number, feed) {
     that.$container.find(that.select('productProp', number, '_image')).attr('src', feed.image_url);
     that.$container.find(that.select('productProp', number, '_image')).attr('alt', feed.label);
     that.$container.find(that.select('productProp', number, '_image_overlay')).html(feed.promotion);
@@ -127,10 +127,9 @@ src_render = function (box, index) {
     that.$container.find(that.select('productProp', number, '_oldprice')).html(feed.main_info);
     that.$container.find(that.select('productProp', number, '_deeplink')).attr('href', feed.deeplink);
     that.$container.find(that.select('productProp', number, '_more_btn')).html(feed.button_text);
-    return selector;
   };
   /* jshint ignore: end */
-  return template(box, index + 1, products[index]);
+  return template(boxIndex + 1, products[productIndex]);
 };
 // controls the logic of animation
 // easing: easeOutBack, easeOutBounce, easeOutElastic, easeInExpo
@@ -140,11 +139,13 @@ src_animator = function (animations, render) {
     $.each(exitItems, function (i, item) {
       var el = item[elLocator]('a');
       el.css({ float: 'left' }).stop().animate(anim.out(el), that.cfg.duration, function () {
+        var enterObj;
         // make sure only to call `enter` once, only call enter when all `out` are finished
         if (exitItems.length === i + 1) {
-          $.each(that.queue.enter(direction), function (j, item) {
+          enterObj = that.queue.enter(direction);
+          $.each(enterObj.boxes, function (j, item) {
             var el = item[elLocator]('a');
-            render.call(that, item, j);
+            render.call(that, j, enterObj.productIndexes.shift());
             // update the markup
             el.css(anim.initial(el)).stop().animate(anim['in'](el), that.cfg.duration, anim.easing(that.cfg.easing));
           });
@@ -153,29 +154,67 @@ src_animator = function (animations, render) {
     });
   };
 }(src_animations, src_render);
-// controls products of carousel
-src_queue = function (cfg) {
-  var that = this, boxes = [], i = -1;
-  // dynamic get boxes, `how many` is also dynamic, defined by the `cfg.count`
-  while (++i < cfg.count) {
-    boxes.push(this.getProduct(i + 1));
-  }
-  return {
-    enter: function (direction) {
-      var products = that.getProducts(), newProducts;
-      if (direction === 'backward') {
-        newProducts = products.slice(cfg.step).concat(products.slice(0, cfg.step));
-      } else {
-        newProducts = products.slice(0 - cfg.step).concat(products.slice(0, products.length - cfg.step));
-      }
-      that.setProducts(newProducts);
-      return boxes;
-    },
-    exit: function (direction) {
-      return boxes;
+src_iterator = function () {
+  var iterator = function (length, startFromZero) {
+    startFromZero = typeof startFromZero === 'undefined' ? true : false;
+    var collection = [], i = -1;
+    while (++i < length) {
+      collection.push(i);
     }
+    var navigate = function (type, step, size) {
+      step = step || 1;
+      size = size || 1;
+      if (startFromZero === true) {
+        step = 0;
+        startFromZero = false;
+      }
+      if (type === 'next') {
+        collection = collection.slice(0 - step).concat(collection.slice(0, collection.length - step));
+      } else {
+        collection = collection.slice(step).concat(collection.slice(0, step));
+      }
+      return collection.slice(0, size);
+    };
+    return {
+      next: function (step, size) {
+        return navigate('next', step, size);
+      },
+      prev: function (step, size) {
+        return navigate('prev', step, size);
+      }
+    };
   };
-};
+  return iterator;
+}();
+// controls products of carousel
+src_queue = function (iterator) {
+  return function (cfg) {
+    var that = this, boxes = [], i = -1;
+    // dynamic get boxes, `how many` is also dynamic, defined by the `cfg.count`
+    while (++i < cfg.count) {
+      boxes.push(this.getBox(i + 1));
+    }
+    var productIterator = iterator(that.getProducts().length, false);
+    var boxIterator = iterator(boxes.length);
+    return {
+      enter: function (direction) {
+        if (direction === 'backward') {
+          return {
+            boxes: boxes,
+            productIndexes: productIterator.prev(cfg.step, cfg.count)
+          };
+        }
+        return {
+          boxes: boxes,
+          productIndexes: productIterator.next(cfg.step, cfg.count)
+        };
+      },
+      exit: function (direction) {
+        return boxes;
+      }
+    };
+  };
+}(src_iterator);
 src_Carousel = function (factory, rotation, animator, queue) {
   // constructor
   var Carousel = function (iden, opts) {
@@ -215,7 +254,7 @@ src_Carousel = function (factory, rotation, animator, queue) {
       this.attach();
     }
   };
-  Carousel.prototype.getProduct = function (boxNr) {
+  Carousel.prototype.getBox = function (boxNr) {
     return $(this.select('product', boxNr));
   };
   Carousel.prototype.getProducts = function () {

@@ -36,7 +36,7 @@ define(['src/idenFactory', 'src/rotation', 'src/animator', 'src/queue'], functio
             this.attach(); // attach event
         }
     };
-    Carousel.prototype.getProduct = function(boxNr) {
+    Carousel.prototype.getBox = function(boxNr) {
         return $(this.select('product', boxNr));
     };
     Carousel.prototype.getProducts = function() { // get `products`, as how, defined in factory

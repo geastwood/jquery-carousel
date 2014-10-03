@@ -1,29 +1,32 @@
 // controls products of carousel
-define(function() {
+define(['src/iterator'], function(iterator) {
     return function(cfg) {
         var that = this, boxes = [], i = -1;
 
         // dynamic get boxes, `how many` is also dynamic, defined by the `cfg.count`
         while (++i < cfg.count) {
-            boxes.push(this.getProduct(i + 1));
+            boxes.push(this.getBox(i + 1));
         }
+
+        var productIterator = iterator(that.getProducts().length, false);
+        var boxIterator = iterator(boxes.length);
 
         return {
             enter: function(direction) {
-                var products = that.getProducts(), newProducts;
-
                 if (direction === 'backward') {
-                    newProducts = products.slice(cfg.step).concat(products.slice(0, cfg.step));
-                } else {
-                    newProducts = products.slice((0 - cfg.step)).concat(products.slice(0, products.length - cfg.step));
+                    return {boxes: boxes, productIndexes: productIterator.prev(cfg.step, cfg.count)};
                 }
+                return {boxes: boxes, productIndexes: productIterator.next(cfg.step, cfg.count)};
 
-                that.setProducts(newProducts);
-
-                return boxes;
             },
             exit: function(direction) {
                 return boxes;
+                /*
+                return boxIterator.prev(1, 1).map(function(i) {
+                    console.log(i);
+                    return boxes[i];
+                });
+                */
             }
         };
     };
